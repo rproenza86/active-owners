@@ -1,0 +1,134 @@
+/* eslint-disable jsx-a11y/alt-text */
+import React, { useState, useEffect } from 'react';
+import Card, {
+    CardPrimaryContent,
+    CardMedia,
+    CardActions,
+    CardActionButtons,
+    CardActionIcons
+} from '@material/react-card';
+import { Body2, Headline6, Subtitle2 } from '@material/react-typography';
+import IconButton from '@material/react-icon-button';
+import MaterialIcon from '@material/react-material-icon';
+import Button from '@material/react-button';
+import List, {
+    ListItem,
+    ListItemText,
+    ListGroup,
+    ListDivider,
+    ListItemGraphic,
+    ListItemMeta
+} from '@material/react-list';
+import Menu, { MenuList, MenuListItem, MenuListItemText } from '@material/react-menu';
+
+import './ActiveOwner.scss';
+
+const ActiveOwner: React.FC = () => {
+    const [openMenu, setOpenMenu] = useState(false);
+    const [coordinates, setCoordinates] = useState(undefined);
+
+    useEffect(() => {
+        window.addEventListener('contextmenu', rightClickCallback);
+        return () => {
+            // Clean up the subscription
+            window.removeEventListener('contextmenu', rightClickCallback);
+        };
+    });
+
+    const rightClickCallback = (event: any) => {
+        setOpenMenu(!openMenu);
+        setCoordinates({ x: event.clientX, y: event.clientY } as any);
+        // Must preventDefault so the system context menu doesn't appear.
+        // This won't be needed in other cases besides right click.
+        event.preventDefault();
+    };
+
+    const onClose = () => {
+        setOpenMenu(false);
+    };
+
+    const menuOptions = ['Team Members', 'Add Member', 'Change Rotation'];
+
+    const image =
+        'https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/2.jpg';
+    return (
+        <>
+            <Card className="mdc-card active-owner-card">
+                <CardPrimaryContent className="active-owner-card__primary-action">
+                    <CardMedia wide imageUrl={image} className="active-owner-card__media" />
+                    <div className="active-owner-card__primary">
+                        <Headline6 className="active-owner-card__title">Team Catalyst</Headline6>
+                        <Subtitle2 className="active-owner-card__subtitle">
+                            Active Owner: <strong>John Doe</strong>
+                        </Subtitle2>
+                    </div>
+                    <Body2 tag="div" className="active-owner-card__secondary">
+                        <Subtitle2 className="active-owner-card__subtitle">
+                            John Contact Info:
+                        </Subtitle2>
+
+                        <ListGroup>
+                            <ListDivider tag="div" />
+                            <List>
+                                <ListItem>
+                                    <ListItemGraphic
+                                        graphic={<MaterialIcon icon="perm_identity" />}
+                                    />
+                                    <ListItemText primaryText="@JohnDoe" />
+                                    <ListItemMeta meta="Slack Id" />
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemGraphic graphic={<MaterialIcon icon="email" />} />
+                                    <ListItemText primaryText="john.doe@coxautoinc.com" />
+                                    <ListItemMeta meta="Email" />
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemGraphic
+                                        graphic={<MaterialIcon icon="desktop_mac" />}
+                                    />
+                                    <ListItemText primaryText="ATL 3003 L15P142" />
+                                    <ListItemMeta meta="Location" />
+                                </ListItem>
+                                <ListDivider tag="div" />
+                            </List>
+                        </ListGroup>
+                    </Body2>
+                </CardPrimaryContent>
+                <CardActions>
+                    <CardActionButtons>
+                        <Button>Update</Button>
+                    </CardActionButtons>
+                    <CardActionIcons>
+                        <IconButton>
+                            <MaterialIcon icon="favorite_border" />
+                        </IconButton>
+                        <IconButton>
+                            <MaterialIcon icon="share" />
+                        </IconButton>
+                        <IconButton onClick={event => rightClickCallback(event)}>
+                            <MaterialIcon icon="more_vert" />
+
+                            <Menu
+                                open={openMenu}
+                                onClose={onClose}
+                                coordinates={coordinates}
+                                onSelected={(index, item) => console.log(index, item)}
+                            >
+                                <MenuList>
+                                    {menuOptions.map((option, index) => (
+                                        <MenuListItem key={index}>
+                                            <MenuListItemText primaryText={option} />
+                                            {/* You can also use other components from list, which are documented below */}
+                                        </MenuListItem>
+                                    ))}
+                                </MenuList>
+                            </Menu>
+                        </IconButton>
+                    </CardActionIcons>
+                </CardActions>
+            </Card>
+        </>
+    );
+};
+
+export default ActiveOwner;

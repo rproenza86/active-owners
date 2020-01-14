@@ -1,0 +1,21 @@
+@import '@material/react-drawer/index.scss';
+@import '@material/react-list/index.scss';
+@import '@material/react-material-icon/index.scss';
+
+.drawer-app-content {
+    flex: auto;
+    overflow: auto;
+}
+
+.top-app-bar-fix-adjust {
+    display: flex;
+    width: 100%;
+}
+
+.mdc-drawer--dismissible {
+    top: auto;
+}
+
+.mdc-drawer {
+    margin-top: 64px;
+}

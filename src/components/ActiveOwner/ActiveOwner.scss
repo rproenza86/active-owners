@@ -1,0 +1,16 @@
+@import '@material/react-card/index.scss';
+@import '@material/react-icon-button/index.scss';
+@import '@material/react-button/index.scss';
+@import '@material/react-typography/index.scss';
+@import '@material/react-list/index.scss';
+@import '@material/react-menu-surface/index.scss';
+@import '@material/react-menu/index.scss';
+
+.active-owner-card__primary,
+.active-owner-card__secondary {
+    padding: 1rem;
+
+    h6 {
+        margin: 10px 0;
+    }
+}

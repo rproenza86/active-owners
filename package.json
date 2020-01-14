@@ -1,0 +1,118 @@
+{
+    "name": "code-factory",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "start": "SASS_PATH=./node_modules PORT=3300 HTTPS=true react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "ci-test": "CI=true npm test -- --coverage",
+        "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
+        "eject": "react-scripts eject",
+        "code-auto-formatting": "./node_modules/.bin/prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+        "storybook": "start-storybook -p 9009 -s public",
+        "build-storybook": "build-storybook -s public",
+        "commit": "git add . && git commit -am ''",
+        "test-build": "firebase serve --only hosting",
+        "deploy-hosting": "./node_modules/.bin/firebase deploy --only hosting"
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "lint-staged": {
+        "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+            "prettier --write",
+            "git add"
+        ]
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged",
+            "prepare-commit-msg": "exec < /dev/tty && git cz --hook"
+        }
+    },
+    "devDependencies": {
+        "@storybook/addon-actions": "^5.2.8",
+        "@storybook/addon-links": "^5.2.8",
+        "@storybook/addons": "^5.2.8",
+        "@storybook/react": "^5.2.8",
+        "@testing-library/jest-dom": "^4.2.4",
+        "@testing-library/react": "^9.3.2",
+        "@testing-library/user-event": "^7.1.2",
+        "@types/classnames": "^2.2.9",
+        "@types/firebase": "^3.2.1",
+        "@types/jest": "^24.0.0",
+        "@types/node": "^12.12.24",
+        "@types/react": "^16.9.17",
+        "@types/react-dom": "^16.9.4",
+        "@types/react-transition-group": "2.8.0",
+        "cz-conventional-changelog": "^3.0.2",
+        "firebase-tools": "^7.11.0",
+        "husky": "^4.0.0",
+        "lint-staged": "^9.5.0",
+        "node-sass": "^4.13.0",
+        "prettier": "^1.19.1",
+        "react-scripts": "3.3.0",
+        "typescript": "~3.7.2"
+    },
+    "dependencies": {
+        "@material/react-button": "^0.15.0",
+        "@material/react-card": "^0.15.0",
+        "@material/react-drawer": "^0.15.0",
+        "@material/react-icon-button": "^0.15.0",
+        "@material/react-layout-grid": "^0.15.0",
+        "@material/react-list": "^0.15.0",
+        "@material/react-material-icon": "^0.15.0",
+        "@material/react-menu": "^0.15.0",
+        "@material/react-menu-surface": "^0.15.0",
+        "@material/react-top-app-bar": "^0.15.0",
+        "@material/react-typography": "^0.15.0",
+        "@material/top-app-bar": "^4.0.0",
+        "firebase": "^7.6.2",
+        "react": "^16.12.0",
+        "react-dom": "^16.12.0",
+        "react-redux": "^7.1.3",
+        "react-router-dom": "^5.1.2",
+        "react-transition-group": "2.8.0",
+        "redux": "^4.0.5",
+        "redux-thunk": "^2.3.0"
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
+    },
+    "jest": {
+        "collectCoverageFrom": [
+            "src/**/*.{js,jsx,ts,tsx}",
+            "!node_modules/",
+            "!src/index.tsx",
+            "!src/stories/**/*.{js,jsx,ts,tsx}",
+            "!src/serviceWorker.ts",
+            "!src/react-app-env.d.ts"
+        ],
+        "coverageThreshold": {
+            "global": {
+                "branches": 90,
+                "functions": 90,
+                "lines": 90,
+                "statements": 90
+            }
+        },
+        "coverageReporters": [
+            "text"
+        ]
+    }
+}

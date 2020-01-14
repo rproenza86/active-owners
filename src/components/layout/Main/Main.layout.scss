@@ -1,0 +1,13 @@
+@import '@material/react-top-app-bar/index.scss';
+@import '@material/react-material-icon/index.scss';
+@import '@material/react-layout-grid/index.scss';
+
+main {
+    width: 100%;
+}
+.drawer-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    overflow: hidden;
+}
