@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Card, {
     CardPrimaryContent,
     CardMedia,
@@ -26,14 +26,6 @@ import './ActiveOwner.scss';
 const ActiveOwner: React.FC = () => {
     const [openMenu, setOpenMenu] = useState(false);
     const [coordinates, setCoordinates] = useState(undefined);
-
-    useEffect(() => {
-        window.addEventListener('contextmenu', rightClickCallback);
-        return () => {
-            // Clean up the subscription
-            window.removeEventListener('contextmenu', rightClickCallback);
-        };
-    });
 
     const rightClickCallback = (event: any) => {
         setOpenMenu(!openMenu);

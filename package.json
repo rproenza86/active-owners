@@ -68,8 +68,10 @@
         "typescript": "~3.7.2"
     },
     "dependencies": {
+        "@material/elevation": "^4.0.0",
         "@material/react-button": "^0.15.0",
         "@material/react-card": "^0.15.0",
+        "@material/react-dialog": "^0.15.0",
         "@material/react-drawer": "^0.15.0",
         "@material/react-icon-button": "^0.15.0",
         "@material/react-layout-grid": "^0.15.0",
