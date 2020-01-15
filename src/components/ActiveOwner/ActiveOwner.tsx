@@ -19,27 +19,42 @@ import List, {
     ListItemGraphic,
     ListItemMeta
 } from '@material/react-list';
-import Menu, { MenuList, MenuListItem, MenuListItemText } from '@material/react-menu';
+import Menu from '../Menu/Menu';
 
 import './ActiveOwner.scss';
 
 const ActiveOwner: React.FC = () => {
+    // menu setup
     const [openMenu, setOpenMenu] = useState(false);
     const [coordinates, setCoordinates] = useState(undefined);
 
     const rightClickCallback = (event: any) => {
         setOpenMenu(!openMenu);
-        setCoordinates({ x: event.clientX, y: event.clientY } as any);
+        setCoordinates({
+            x: event.clientX,
+            y: event.clientY
+        } as any);
         // Must preventDefault so the system context menu doesn't appear.
         // This won't be needed in other cases besides right click.
         event.preventDefault();
     };
 
-    const onClose = () => {
-        setOpenMenu(false);
-    };
-
-    const menuOptions = ['Team Members', 'Add Member', 'Change Rotation'];
+    const dummyOptionCallBack = (optionName: string) =>
+        console.log(`Menu option "${optionName}" clicked`);
+    const menuOptions = [
+        {
+            optionName: 'Team Members',
+            optionCallBack: dummyOptionCallBack
+        },
+        {
+            optionName: 'Add Member',
+            optionCallBack: dummyOptionCallBack
+        },
+        {
+            optionName: 'Change Rotation',
+            optionCallBack: dummyOptionCallBack
+        }
+    ];
 
     const image =
         'https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/2.jpg';
@@ -101,20 +116,11 @@ const ActiveOwner: React.FC = () => {
                             <MaterialIcon icon="more_vert" />
 
                             <Menu
-                                open={openMenu}
-                                onClose={onClose}
                                 coordinates={coordinates}
-                                onSelected={(index, item) => console.log(index, item)}
-                            >
-                                <MenuList>
-                                    {menuOptions.map((option, index) => (
-                                        <MenuListItem key={index}>
-                                            <MenuListItemText primaryText={option} />
-                                            {/* You can also use other components from list, which are documented below */}
-                                        </MenuListItem>
-                                    ))}
-                                </MenuList>
-                            </Menu>
+                                menuOptions={menuOptions}
+                                openMenu={openMenu}
+                                setOpenMenu={setOpenMenu}
+                            />
                         </IconButton>
                     </CardActionIcons>
                 </CardActions>

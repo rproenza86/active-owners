@@ -13,12 +13,22 @@ import Drawer from './Drawer.layout';
 
 import './Main.layout.scss';
 import '@material/react-list/dist/list.css';
+import { logoutUser } from '../../../actions';
+import { connect } from 'react-redux';
+import User from '../../User/User';
 
 interface IMain {
     children: React.ReactNode;
+    user: firebase.User
 }
 
-const Main: React.FC<IMain> = props => {
+export interface IMainDispatchProps {
+    handleLogout: () => void;
+}
+
+export type IMainProps = IMain & IMainDispatchProps;
+
+const Main: React.FC<IMainProps> = ({ children, user, handleLogout }) => {
     const mainContentEl: any = React.createRef();
 
     const [open, setOpen] = useState(false);
@@ -44,12 +54,7 @@ const Main: React.FC<IMain> = props => {
                     </TopAppBarSection>
                     <TopAppBarSection align="end" role="toolbar">
                         <TopAppBarIcon actionItem tabIndex={0}>
-                            <MaterialIcon
-                                aria-label="User"
-                                hasRipple
-                                icon="person"
-                                onClick={() => console.log('person')}
-                            />
+                            <User logoutHandler={handleLogout} displayName={user?.displayName} image={user?.photoURL}/>
                         </TopAppBarIcon>
                     </TopAppBarSection>
                 </TopAppBarRow>
@@ -57,9 +62,9 @@ const Main: React.FC<IMain> = props => {
             <TopAppBarFixedAdjust>
                 <Grid>
                     <Row>
-                        <Cell columns={4}>{props.children}</Cell>
-                        <Cell columns={4}>{props.children}</Cell>
-                        <Cell columns={4}>{props.children}</Cell>
+                        <Cell columns={4}>{children}</Cell>
+                        <Cell columns={4}>{children}</Cell>
+                        <Cell columns={4}>{children}</Cell>
                     </Row>
                 </Grid>
             </TopAppBarFixedAdjust>
@@ -73,4 +78,18 @@ const Main: React.FC<IMain> = props => {
     );
 };
 
-export default Main;
+const mapStateToProps = (state: any) => {
+    return {
+        user: state?.auth?.user
+    };
+};
+
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        handleLogout: () => {
+            dispatch(logoutUser());
+        }
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
