@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import TopAppBar, {
     TopAppBarFixedAdjust,
     TopAppBarIcon,
@@ -7,28 +8,24 @@ import TopAppBar, {
     TopAppBarTitle
 } from '@material/react-top-app-bar';
 import MaterialIcon from '@material/react-material-icon';
-import { Cell, Grid, Row } from '@material/react-layout-grid';
+import { Grid } from '@material/react-layout-grid';
 
+import User from '../../User/User';
 import Drawer from './Drawer.layout';
 
 import './Main.layout.scss';
 import '@material/react-list/dist/list.css';
-import { logoutUser } from '../../../actions';
-import { connect } from 'react-redux';
-import User from '../../User/User';
 
 interface IMain {
     children: React.ReactNode;
-    user: firebase.User
+    user: firebase.User;
 }
 
-export interface IMainDispatchProps {
-    handleLogout: () => void;
-}
+export interface IMainDispatchProps {}
 
 export type IMainProps = IMain & IMainDispatchProps;
 
-const Main: React.FC<IMainProps> = ({ children, user, handleLogout }) => {
+const Main: React.FC<IMainProps> = ({ children, user }) => {
     const mainContentEl: any = React.createRef();
 
     const [open, setOpen] = useState(false);
@@ -54,19 +51,13 @@ const Main: React.FC<IMainProps> = ({ children, user, handleLogout }) => {
                     </TopAppBarSection>
                     <TopAppBarSection align="end" role="toolbar">
                         <TopAppBarIcon actionItem tabIndex={0}>
-                            <User logoutHandler={handleLogout} displayName={user?.displayName} image={user?.photoURL}/>
+                            <User displayName={user?.displayName} image={user?.photoURL} />
                         </TopAppBarIcon>
                     </TopAppBarSection>
                 </TopAppBarRow>
             </TopAppBar>
             <TopAppBarFixedAdjust>
-                <Grid>
-                    <Row>
-                        <Cell columns={4}>{children}</Cell>
-                        <Cell columns={4}>{children}</Cell>
-                        <Cell columns={4}>{children}</Cell>
-                    </Row>
-                </Grid>
+                <Grid>{children}</Grid>
             </TopAppBarFixedAdjust>
 
             <Drawer
@@ -84,12 +75,4 @@ const mapStateToProps = (state: any) => {
     };
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-    return {
-        handleLogout: () => {
-            dispatch(logoutUser());
-        }
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Main);
+export default connect(mapStateToProps)(Main);

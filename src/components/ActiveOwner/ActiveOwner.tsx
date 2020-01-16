@@ -22,8 +22,13 @@ import List, {
 import Menu from '../Menu/Menu';
 
 import './ActiveOwner.scss';
+import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
-const ActiveOwner: React.FC = () => {
+interface IActiveOwnerProps {
+    activeOwner: ITeamsMemberHydrated;
+}
+
+const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
     // menu setup
     const [openMenu, setOpenMenu] = useState(false);
     const [coordinates, setCoordinates] = useState(undefined);
@@ -64,14 +69,16 @@ const ActiveOwner: React.FC = () => {
                 <CardPrimaryContent className="active-owner-card__primary-action">
                     <CardMedia wide imageUrl={image} className="active-owner-card__media" />
                     <div className="active-owner-card__primary">
-                        <Headline6 className="active-owner-card__title">Team Catalyst</Headline6>
+                        <Headline6 className="active-owner-card__title">
+                            {activeOwner.teamName}
+                        </Headline6>
                         <Subtitle2 className="active-owner-card__subtitle">
-                            Active Owner: <strong>John Doe</strong>
+                            Active Owner: <strong>{activeOwner.name}</strong>
                         </Subtitle2>
                     </div>
                     <Body2 tag="div" className="active-owner-card__secondary">
                         <Subtitle2 className="active-owner-card__subtitle">
-                            John Contact Info:
+                            {activeOwner.name} Contact Info:
                         </Subtitle2>
 
                         <ListGroup>
@@ -81,19 +88,19 @@ const ActiveOwner: React.FC = () => {
                                     <ListItemGraphic
                                         graphic={<MaterialIcon icon="perm_identity" />}
                                     />
-                                    <ListItemText primaryText="@JohnDoe" />
+                                    <ListItemText primaryText={activeOwner.slackId} />
                                     <ListItemMeta meta="Slack Id" />
                                 </ListItem>
                                 <ListItem>
                                     <ListItemGraphic graphic={<MaterialIcon icon="email" />} />
-                                    <ListItemText primaryText="john.doe@coxautoinc.com" />
+                                    <ListItemText primaryText={activeOwner.email} />
                                     <ListItemMeta meta="Email" />
                                 </ListItem>
                                 <ListItem>
                                     <ListItemGraphic
                                         graphic={<MaterialIcon icon="desktop_mac" />}
                                     />
-                                    <ListItemText primaryText="ATL 3003 L15P142" />
+                                    <ListItemText primaryText={activeOwner.location} />
                                     <ListItemMeta meta="Location" />
                                 </ListItem>
                                 <ListDivider tag="div" />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Splash from '../Splash/Splash';
 import Main from '../layout/Main/Main.layout';
@@ -7,24 +7,39 @@ import Login from '../Login/Login';
 import { connect } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 import ProtectedRoute from '../ProtectedRoute';
+import { getACList, ITeamsMemberHydrated } from '../../actions/activeOwners';
+import { IStateTree } from '../../types';
+import { Cell, Row } from '@material/react-layout-grid';
 
 interface IApp {
     isAuthenticated: boolean;
     isVerifying: boolean;
+    loadAC: () => void;
+    activeOwners: ITeamsMemberHydrated[];
 }
 
-const Home = () => (
-    <Main>
-        <ActiveOwner />
-    </Main>
-);
-
-const App: React.FC<IApp> = ({ isAuthenticated, isVerifying }) => {
+const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwners }) => {
     const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        loadAC();
+    }, [loadAC]);
 
     setTimeout(function() {
         setIsLoading(false);
-    }, 1000);
+    }, 3000);
+
+    const Home = () => (
+        <Main>
+            <Row>
+                {activeOwners.map((ac, index) => (
+                    <Cell columns={5} key={index}>
+                        <ActiveOwner activeOwner={ac} />
+                    </Cell>
+                ))}
+            </Row>
+        </Main>
+    );
 
     return (
         <div className="App">
@@ -46,11 +61,24 @@ const App: React.FC<IApp> = ({ isAuthenticated, isVerifying }) => {
     );
 };
 
-function mapStateToProps(state: any) {
+const mapStateToProps = (state: IStateTree) => {
+    const activeOwners: ITeamsMemberHydrated[] = state.teamsMembers.filter(
+        (member: ITeamsMemberHydrated) => member.isActiveOwner
+    );
+
     return {
         isAuthenticated: state.auth.isAuthenticated,
-        isVerifying: state.auth.isVerifying
+        isVerifying: state.auth.isVerifying,
+        activeOwners
     };
-}
+};
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        loadAC: () => {
+            dispatch(getACList());
+        }
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

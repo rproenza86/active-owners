@@ -20,7 +20,6 @@ const AppMenu: React.FC<IAppMenu> = ({ coordinates, menuOptions, openMenu, setOp
         setOpenMenu(false);
     };
 
-    debugger;
     return (
         <>
             <Menu

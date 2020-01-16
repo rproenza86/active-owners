@@ -8,10 +8,10 @@ import Menu from '../Menu/Menu';
 import '@material/react-chips/index.scss';
 import { logoutUser } from '../../actions';
 import { connect } from 'react-redux';
+
 interface IUser {
     displayName: string | null;
     image: string | null;
-    logoutHandler: () => void;
 }
 
 export interface IUserDispatchProps {
