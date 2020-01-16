@@ -19,3 +19,9 @@
 .mdc-drawer {
     margin-top: 64px;
 }
+
+@media only screen and (max-width: 600px) {
+    .mdc-drawer {
+        margin-top: 56px;
+    }
+}
