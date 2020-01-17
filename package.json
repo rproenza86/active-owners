@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
+        "start2": "SASS_PATH=./node_modules PORT=3300 react-scripts start",
         "start": "SASS_PATH=./node_modules PORT=3300 HTTPS=true react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",

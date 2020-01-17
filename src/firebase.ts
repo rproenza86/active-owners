@@ -25,6 +25,6 @@ export const analytics = firebase.analytics();
 export const auth = firebase.auth();
 export const storage = firebase.storage();
 export const performance = firebase.performance();
-export const remoteConfig = firebase.remoteConfig();
+// export const remoteConfig = firebase.remoteConfig();
 
 export default firebase;

@@ -33,21 +33,9 @@ const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwner
         <Main>
             <Row>
                 {activeOwners.map((ac, index) => (
-                    <>
-                        <Cell desktopColumns={3} phoneColumns={4} tabletColumns={4} key={index}>
-                            <ActiveOwner activeOwner={ac} />
-                        </Cell>
-
-                        <Cell desktopColumns={3} phoneColumns={4} tabletColumns={4} key={index}>
-                            <ActiveOwner activeOwner={ac} />
-                        </Cell>
-                        <Cell desktopColumns={3} phoneColumns={4} tabletColumns={4} key={index}>
-                            <ActiveOwner activeOwner={ac} />
-                        </Cell>
-                        <Cell desktopColumns={3} phoneColumns={4} tabletColumns={4} key={index}>
-                            <ActiveOwner activeOwner={ac} />
-                        </Cell>
-                    </>
+                    <Cell desktopColumns={3} phoneColumns={4} tabletColumns={4} key={index}>
+                        <ActiveOwner activeOwner={ac} />
+                    </Cell>
                 ))}
             </Row>
         </Main>

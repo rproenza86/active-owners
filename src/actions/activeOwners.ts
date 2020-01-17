@@ -10,7 +10,7 @@ interface ITeamsObject {
     location: string;
     logo: string;
     name: string;
-    acID?: string;
+    acId?: string;
 }
 
 interface ITeams {
@@ -43,6 +43,24 @@ const getACListSuccess: ActionCreator<GetACListSuccessAction> = (
     payload
 });
 
+export const getTeamsMemberHydrated = (
+    teamsMembers: ITeamMember[],
+    teams: ITeams
+): ITeamsMemberHydrated[] =>
+    teamsMembers.map((member: ITeamMember) => {
+        const { location: teamLocation, logo, name: teamName, acId } = teams[member.teamId];
+
+        const teamsMemberHydrated = {
+            ...member,
+            logo,
+            location: `${teamLocation} ${member.location}`,
+            teamName,
+            isActiveOwner: acId === member.teamMemberId ? true : false
+        };
+
+        return teamsMemberHydrated;
+    });
+
 export const getACList = () => (dispatch: any) => {
     const teamsRef = db.collection('teams');
     const teamsMembersRef = db.collection('team-members');
@@ -73,20 +91,11 @@ export const getACList = () => (dispatch: any) => {
         .then(values => {
             const [teams, teamsMembers] = values;
 
-            const teamsMemberHydrated: ITeamsMemberHydrated[] = teamsMembers.map(
-                (member: ITeamMember) => {
-                    const { location: teamLocation, logo, name: teamName, acID } = teams[
-                        member.teamId
-                    ];
-                    return {
-                        ...member,
-                        logo,
-                        location: `${teamLocation} ${member.location}`,
-                        teamName,
-                        isActiveOwner: acID === member.teamMemberId ? true : false
-                    };
-                }
+            const teamsMemberHydrated: ITeamsMemberHydrated[] = getTeamsMemberHydrated(
+                teamsMembers,
+                teams
             );
+
             dispatch(getACListSuccess(teamsMemberHydrated));
         })
         .catch(err => {
@@ -94,8 +103,8 @@ export const getACList = () => (dispatch: any) => {
         });
 };
 
-export const addUsersBatch = (): void => {
-    const users = [
+export const addUsersBatch = (userP?: any): void => {
+    const users = userP || [
         {
             email: 'kevin.berry@coxautoinc.com',
             location: 'L15P142',
@@ -105,8 +114,9 @@ export const addUsersBatch = (): void => {
         }
     ];
 
-    users.map(user => {
-        return db.collection('team-members')
+    users.map((user: any) => {
+        return db
+            .collection('team-members')
             .add(user)
             .then(function(docRef) {
                 console.log('Document written with ID: ', docRef.id);
@@ -114,5 +124,92 @@ export const addUsersBatch = (): void => {
             .catch(function(error) {
                 console.error('Error adding document: ', error);
             });
+    });
+};
+
+export const addTeamsBatch = (): void => {
+    const teams = [
+        {
+            acId: '',
+            location: 'ATL 3003',
+            name: 'Horsepower',
+            logo: ''
+        },
+        {
+            acId: '',
+            location: 'ATL 3003',
+            name: 'Rocket',
+            logo: ''
+        },
+        {
+            acId: '',
+            location: 'ATL 3003',
+            name: 'Unimog',
+            logo: ''
+        },
+        {
+            acId: '',
+            location: 'ATL 3003',
+            name: 'GearShift',
+            logo: ''
+        },
+        {
+            acId: '',
+            location: 'ATL 3003',
+            name: 'Torque',
+            logo: ''
+        }
+    ];
+    const users = [
+        {
+            email: 'krunal.thakkar@coxautoinc.com',
+            location: 'L15P142',
+            name: 'Krunal Thakkar',
+            slackId: '@krunal.thakkar',
+            teamId: ''
+        },
+        {
+            email: 'Felix.Guerrero@coxautoinc.com',
+            location: 'L15P142',
+            name: 'Felix Guerrero',
+            slackId: '@felix',
+            teamId: ''
+        },
+        {
+            email: 'sravan.konda@coxautoinc.com',
+            location: 'L15P142',
+            name: 'Sravan Konda',
+            slackId: '@sravan',
+            teamId: ''
+        },
+        {
+            email: 'lennox.antoine2@coxautoinc.com',
+            location: 'L15P142',
+            name: 'Lennox Antoine',
+            slackId: '@lennox',
+            teamId: ''
+        },
+        {
+            email: 'Ethan.Garber@coxautoinc.com',
+            location: 'L15P142',
+            name: 'Ethan Garber',
+            slackId: '@ethan',
+            teamId: ''
+        }
+    ];
+
+    let counter = 0;
+    teams.map(user => {
+        return db
+            .collection('teams')
+            .add(user)
+            .then(function(docRef) {
+                console.log('Document written with ID: ', docRef.id);
+                users[counter++].teamId = docRef.id;
+            })
+            .catch(function(error) {
+                console.error('Error adding document: ', error);
+            })
+            .finally(() => addUsersBatch(users));
     });
 };

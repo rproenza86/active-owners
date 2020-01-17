@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "1.1 Start UI Server",
+            "type": "node",
+            "request": "launch",
+            "preLaunchTask": {
+                "task": "start server",
+                "type": "npm",
+                "script": "start"
+            }
+        },
+        {
+            "name": "1.2 Open Web App in Chrome",
+            "type": "chrome",
+            "request": "launch",
+            "url": "https://activeowner.makemydeal.dev/",
+            "webRoot": "${workspaceFolder}/src",
+            "sourceMapPathOverrides": {
+                "webpack:///src/*": "${webRoot}/*"
+            }
+        },
+        {
+            "name": "2 Debug CRA Tests",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/react-scripts",
+            "args": ["test", "--runInBand", "--no-cache", "--watchAll=false"],
+            "cwd": "${workspaceRoot}",
+            "protocol": "inspector",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "env": { "CI": "true" },
+            "disableOptimisticBPs": true
+        }
+    ]
+}
