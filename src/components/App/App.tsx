@@ -10,6 +10,8 @@ import ProtectedRoute from '../ProtectedRoute';
 import { getACList, ITeamsMemberHydrated } from '../../actions/activeOwners';
 import { IStateTree } from '../../types';
 import { Cell, Row } from '@material/react-layout-grid';
+import TeamList from '../TeamList/TeamList';
+import TeamMemberList from '../TeamMemberList/TeamMemberList';
 
 interface IApp {
     isAuthenticated: boolean;
@@ -30,15 +32,13 @@ const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwner
     }, 3000);
 
     const Home = () => (
-        <Main>
-            <Row>
-                {activeOwners.map((ac, index) => (
-                    <Cell desktopColumns={3} phoneColumns={4} tabletColumns={4} key={index}>
-                        <ActiveOwner activeOwner={ac} />
-                    </Cell>
-                ))}
-            </Row>
-        </Main>
+        <Row>
+            {activeOwners.map((ac, index) => (
+                <Cell desktopColumns={3} phoneColumns={4} tabletColumns={4} key={index}>
+                    <ActiveOwner activeOwner={ac} />
+                </Cell>
+            ))}
+        </Row>
     );
 
     return (
@@ -47,14 +47,18 @@ const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwner
                 <Splash />
             ) : (
                 <Switch>
-                    <ProtectedRoute
-                        exact
-                        path="/"
-                        component={Home}
-                        isAuthenticated={isAuthenticated}
-                        isVerifying={isVerifying}
-                    />
-                    <Route path="/login" component={Login} />
+                    <Main>
+                        <ProtectedRoute
+                            exact
+                            path="/"
+                            component={Home}
+                            isAuthenticated={isAuthenticated}
+                            isVerifying={isVerifying}
+                        />
+                        <Route path="/login" component={Login} />
+                        <Route path="/teams" component={TeamList} />
+                        <Route path="/engineers" component={TeamMemberList} />
+                    </Main>
                 </Switch>
             )}
         </div>
