@@ -1,6 +1,19 @@
 import { Action } from 'redux';
 import { ITeamsMemberHydrated } from './actions/activeOwners';
 
+export interface IDocument {
+    key: string;
+    name: string;
+    value: string;
+    iconName: string;
+    fileType: string;
+    modifiedBy: string;
+    dateModified: string;
+    dateModifiedValue: number;
+    fileSize: string;
+    fileSizeRaw: number;
+}
+
 export interface IAuthState {
     isLoggingIn: boolean;
     isLoggingOut: boolean;
@@ -14,9 +27,27 @@ export interface IAuthState {
 
 export interface ITeamsMembersState extends Array<ITeamsMemberHydrated> {}
 
+export interface ITeamsObject {
+    teamId: string;
+    location: string;
+    logo: string;
+    name: string;
+    acId?: string;
+    activeOwnerName?: string;
+}
+
+export interface ITeamsState {
+    [id: string]: ITeamsObject;
+}
+
+export interface ITeam extends ITeamsObject {
+    id: string;
+}
+
 export interface IStateTree {
     auth: IAuthState;
     teamsMembers: ITeamsMembersState;
+    teams: ITeam[];
 }
 
 export interface SimpleFSA<T> extends Action {

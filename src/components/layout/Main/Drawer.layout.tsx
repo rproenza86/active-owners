@@ -26,7 +26,7 @@ const AppDrawer: React.FC<IAppDrawerProps> = ({
     location
 }) => {
     let initialSelectedIndex: number = ListItemIndex.ActiveOwnersList;
-    debugger;
+
     switch (location.pathname) {
         case '/teams':
             initialSelectedIndex = ListItemIndex.TeamList;

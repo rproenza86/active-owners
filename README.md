@@ -44,3 +44,5 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 To learn React, check out the [React documentation](https://reactjs.org/).
 
 > Fix for nginx proxy : https://activeowner.makemydeal.dev/ - https://github.com/facebook/create-react-app/issues/8075
+
+> Office UI Fabric Icons: https://uifabricicons.azurewebsites.net/ , https://github.com/OfficeDev/office-ui-fabric-react/wiki/Using-icons

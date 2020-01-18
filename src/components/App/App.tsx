@@ -29,7 +29,7 @@ const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwner
 
     setTimeout(function() {
         setIsLoading(false);
-    }, 3000);
+    }, 1000);
 
     const Home = () => (
         <Row>
