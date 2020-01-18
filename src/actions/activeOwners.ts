@@ -63,11 +63,11 @@ export const hydrateTeams = (teamsMembers: ITeamMember[], teamsP: ITeamsState): 
     teamsIds.map(id =>
         teams.push({
             ...teamsP[id],
-            id: teamsP[id].teamId,
+            id,
             activeOwnerName: teamsMembersHash[(teamsP as any)[id].acId] as any
         })
     );
-    debugger;
+
     return teams;
 };
 

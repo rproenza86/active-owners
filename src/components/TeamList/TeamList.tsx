@@ -26,7 +26,7 @@ const TeamList: React.FC<ITeamListProps> = ({ teams }) => {
                 ariaLabel: 'Column operations for File type, Press to sort on File type',
                 iconName: 'Engineers',
                 isIconOnly: true,
-                fieldName: 'id',
+                fieldName: 'name',
                 minWidth: 16,
                 maxWidth: 40,
                 onRender: (item: IDocument) => {
@@ -49,7 +49,7 @@ const TeamList: React.FC<ITeamListProps> = ({ teams }) => {
                 isPadded: true
             },
             {
-                key: 'column4',
+                key: 'column3',
                 name: 'Team Location',
                 fieldName: 'location',
                 minWidth: 210,
@@ -64,7 +64,7 @@ const TeamList: React.FC<ITeamListProps> = ({ teams }) => {
                 isPadded: true
             },
             {
-                key: 'column5',
+                key: 'column4',
                 name: 'Team Active Owner',
                 fieldName: 'activeOwnerName',
                 minWidth: 210,

@@ -273,7 +273,6 @@ class DetailsListUI extends React.Component<
                 newCol.isSortedDescending = true;
             }
         });
-        debugger;
         const newItems = _copyAndSort<any>(
             items,
             currColumn.fieldName!,
