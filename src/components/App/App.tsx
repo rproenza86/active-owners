@@ -25,11 +25,11 @@ const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwner
 
     useEffect(() => {
         loadAC(isAuthenticated);
-    }, [isAuthenticated]);
+    }, [isAuthenticated, loadAC]);
 
     setTimeout(function() {
         setIsLoading(false);
-    }, 1000);
+    }, 3000);
 
     const Home = () => (
         <Row>
