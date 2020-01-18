@@ -1,12 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { Cell, Grid, Row } from '@material/react-layout-grid';
 import Card, { CardPrimaryContent } from '@material/react-card';
 import MaterialIcon from '@material/react-material-icon';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 
 import './Login.scss';
-import { Button } from '@material/react-button';
-import google from './google.svg';
-import github from './github.svg';
 import { requestLogin, receiveLogin, loginError, logoutUser } from '../../actions';
 import { connect } from 'react-redux';
 import firebase, { auth } from '../../firebase';
@@ -25,30 +24,52 @@ export interface ILoginDispatchProps {
 export type ILoginProps = ILoginStateProps & ILoginDispatchProps;
 
 const Login: React.FC<ILoginProps> = ({ handleLogin, isAuthenticated }) => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-
-    const googleSignIn = () => {
-        auth.signInWithPopup(provider)
-            .then(function(result) {
-                handleLogin(result.user);
-            })
-            .catch(function(error) {
+    // Configure FirebaseUI.
+    const config = {
+        // Popup signin flow rather than redirect flow.
+        signInFlow: 'popup',
+        // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
+        signInSuccessUrl: '/',
+        // We will display Google and Facebook as auth providers.
+        signInOptions: [
+            firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+            firebase.auth.GithubAuthProvider.PROVIDER_ID
+        ],
+        callbacks: {
+            // Called when the user has been successfully signed in.
+            signInSuccessWithAuthResult: function(authResult: any, redirectUrl: string) {
+                if (authResult.user) {
+                    handleLogin(authResult.user);
+                }
+                if (authResult.additionalUserInfo) {
+                    const additionalUserInfo = authResult.additionalUserInfo.isNewUser
+                        ? 'New User'
+                        : 'Existing User';
+                    console.log(additionalUserInfo);
+                }
+                // Do not redirect.
+                return false;
+            },
+            signInFailure: (error: firebaseui.auth.AuthUIError): any => {
                 // Handle Errors here.
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                // The email of the user's account used.
-                var email = error.email;
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                const fullError = error.toJSON;
                 // The firebase.auth.AuthCredential type that was used.
-                var credential = error.credential;
+                const credential = error.credential;
                 // ...
-                return {
+                const toLog = {
                     errorCode,
                     errorMessage,
-                    email,
+                    fullError,
                     credential
                 };
-            });
+
+                console.error(toLog);
+            }
+        }
     };
+
     if (isAuthenticated) {
         return <Redirect to="/" />;
     } else {
@@ -69,7 +90,7 @@ const Login: React.FC<ILoginProps> = ({ handleLogin, isAuthenticated }) => {
                 <Row className="body">
                     <Cell desktopColumns={12} phoneColumns={4} tabletColumns={8}>
                         <Card>
-                            <CardPrimaryContent>
+                            <CardPrimaryContent className="mdc-elevation--z16">
                                 <Grid>
                                     <Row>
                                         <Cell
@@ -77,39 +98,10 @@ const Login: React.FC<ILoginProps> = ({ handleLogin, isAuthenticated }) => {
                                             phoneColumns={4}
                                             tabletColumns={8}
                                         >
-                                            <Button
-                                                outlined
-                                                icon={
-                                                    <img
-                                                        src={github}
-                                                        className="github-logo"
-                                                        alt="github-logo"
-                                                    />
-                                                }
-                                            >
-                                                Login with Github
-                                            </Button>
-                                        </Cell>
-                                    </Row>
-                                    <Row>
-                                        <Cell
-                                            desktopColumns={12}
-                                            phoneColumns={4}
-                                            tabletColumns={8}
-                                        >
-                                            <Button
-                                                outlined
-                                                onClick={() => googleSignIn()}
-                                                icon={
-                                                    <img
-                                                        src={google}
-                                                        className="google-logo"
-                                                        alt="google-logo"
-                                                    />
-                                                }
-                                            >
-                                                Login with Google
-                                            </Button>
+                                            <StyledFirebaseAuth
+                                                uiConfig={config}
+                                                firebaseAuth={auth}
+                                            />
                                         </Cell>
                                     </Row>
                                 </Grid>

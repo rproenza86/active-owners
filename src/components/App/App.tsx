@@ -16,7 +16,7 @@ import TeamMemberList from '../TeamMemberList/TeamMemberList';
 interface IApp {
     isAuthenticated: boolean;
     isVerifying: boolean;
-    loadAC: () => void;
+    loadAC: (isAuthenticated: boolean) => void;
     activeOwners: ITeamsMemberHydrated[];
 }
 
@@ -24,8 +24,8 @@ const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwner
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        loadAC();
-    }, [loadAC]);
+        loadAC(isAuthenticated);
+    }, [isAuthenticated]);
 
     setTimeout(function() {
         setIsLoading(false);
@@ -56,8 +56,20 @@ const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwner
                             isVerifying={isVerifying}
                         />
                         <Route path="/login" component={Login} />
-                        <Route path="/teams" component={TeamList} />
-                        <Route path="/engineers" component={TeamMemberList} />
+                        <ProtectedRoute
+                            exact
+                            path="/teams"
+                            component={TeamList}
+                            isAuthenticated={isAuthenticated}
+                            isVerifying={isVerifying}
+                        />
+                        <ProtectedRoute
+                            exact
+                            path="/engineers"
+                            component={TeamMemberList}
+                            isAuthenticated={isAuthenticated}
+                            isVerifying={isVerifying}
+                        />
                     </Main>
                 </Switch>
             )}
@@ -79,8 +91,8 @@ const mapStateToProps = (state: IStateTree) => {
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        loadAC: () => {
-            dispatch(getACList());
+        loadAC: (isAuthenticated: boolean) => {
+            isAuthenticated && dispatch(getACList());
         }
     };
 };

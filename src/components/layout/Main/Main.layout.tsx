@@ -39,21 +39,25 @@ const Main: React.FC<IMainProps> = ({ children, user }) => {
             <TopAppBar>
                 <TopAppBarRow>
                     <TopAppBarSection align="start">
-                        <TopAppBarIcon navIcon tabIndex={0}>
-                            <MaterialIcon
-                                hasRipple
-                                icon="menu"
-                                onClick={() => setOpen(true)}
-                                ref={mainContentEl}
-                            />
-                        </TopAppBarIcon>
+                        {user.email && (
+                            <TopAppBarIcon navIcon tabIndex={0}>
+                                <MaterialIcon
+                                    hasRipple
+                                    icon="menu"
+                                    onClick={() => setOpen(true)}
+                                    ref={mainContentEl}
+                                />
+                            </TopAppBarIcon>
+                        )}
                         <TopAppBarTitle>Active Owner Registry</TopAppBarTitle>
                     </TopAppBarSection>
-                    <TopAppBarSection align="end" role="toolbar">
-                        <TopAppBarIcon actionItem tabIndex={0}>
-                            <User displayName={user?.displayName} image={user?.photoURL} />
-                        </TopAppBarIcon>
-                    </TopAppBarSection>
+                    {user.email && (
+                        <TopAppBarSection align="end" role="toolbar">
+                            <TopAppBarIcon actionItem tabIndex={0}>
+                                <User displayName={user?.displayName} image={user?.photoURL} />
+                            </TopAppBarIcon>
+                        </TopAppBarSection>
+                    )}
                 </TopAppBarRow>
             </TopAppBar>
             <TopAppBarFixedAdjust>

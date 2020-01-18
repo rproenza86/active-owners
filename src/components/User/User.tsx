@@ -25,7 +25,7 @@ const User: React.FC<IUserProps> = ({ displayName, image, handleLogout }) => {
     const [openMenu, setOpenMenu] = useState(false);
     const [coordinates, setCoordinates] = useState(undefined);
 
-    const rightClickCallback = (event: any) => {
+    const setupMenu = (event: any) => {
         setOpenMenu(!openMenu);
         setCoordinates({
             x: event.clientX,
@@ -36,17 +36,16 @@ const User: React.FC<IUserProps> = ({ displayName, image, handleLogout }) => {
         event.preventDefault();
     };
 
-    const logoutCallBack = (optionName: string) => handleLogout();
+    const logoutCallBack = (optionName: string) => {
+        setOpenMenu(!openMenu);
+        handleLogout();
+    };
     const menuOptions = [
         {
             optionName: 'Logout',
             optionCallBack: logoutCallBack
         }
     ];
-    const onClickHandler = (event: any) => {
-        event.preventDefault();
-        rightClickCallback(event);
-    };
 
     return (
         <ChipSet className="user-container">
@@ -54,8 +53,8 @@ const User: React.FC<IUserProps> = ({ displayName, image, handleLogout }) => {
                 id="user-chip"
                 label={displayName || 'Missing User Name'}
                 leadingIcon={<img src={image || ''} alt={`Profile of ${displayName}`}></img>}
-                trailingIcon={<MaterialIcon icon="more_vert" onClick={onClickHandler} />}
-                onClick={onClickHandler}
+                trailingIcon={<MaterialIcon icon="more_vert" onClick={setupMenu} />}
+                onClick={setupMenu}
             />
             <Menu
                 coordinates={coordinates}
