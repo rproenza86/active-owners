@@ -4,5 +4,45 @@
         "javascriptreact",
         { "language": "typescript", "autoFix": true },
         { "language": "typescriptreact", "autoFix": true }
-    ]
+    ],
+    "files.exclude": {
+        "build/": true,
+        ".firebase/": true,
+        "coverage/": true,
+        "coverage-integration/": true,
+        "node_modules/": true
+    },
+    "search.exclude": {
+        "build/": true,
+        ".firebase/": true,
+        "coverage/": true,
+        "coverage-integration/": true,
+        "node_modules/": true
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.rulers": [132],
+    "tslint.configFile": "./tslint.json",
+    "workbench.iconTheme": "vscode-icons",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "nodeTdd.testScript": "test-lcov-only",
+    "workbench.colorCustomizations": {
+        // top bar
+        "titleBar.activeBackground": "#FF1744",
+        "titleBar.inactiveBackground": "#ff2551bf",
+        "titleBar.activeForeground": "#ffffff",
+        "titleBar.inactiveForeground": "#cccccc",
+        // terminal panel
+        "panel.background": "#673AB7",
+        "panel.border": "#FFFF00",
+        "panelTitle.activeForeground": "#FFFF8D",
+        // panel with Explorer, Debugger ..
+        "activityBar.background": "#FF1744",
+        "activityBar.activeForeground": "#ffffff",
+        "activityBar.inactiveForeground": "#ccccccd6",
+        // footer
+        "statusBar.background": "#FF1744",
+        "statusBar.foreground": "#ffffff",
+        "statusBarItem.hoverBackground": "#673AB7"
+    }
 }
