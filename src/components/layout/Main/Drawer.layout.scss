@@ -29,3 +29,8 @@
 .mdc-list > a {
     text-decoration: none !important;
 }
+
+.mdc-drawer--modal + .mdc-drawer-scrim {
+    backdrop-filter: blur(5px);
+    background-color: rgba(244, 248, 252, 0.29);
+}

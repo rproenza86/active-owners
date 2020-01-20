@@ -52,7 +52,7 @@ const AppDrawer: React.FC<IAppDrawerProps> = ({
 
     return (
         <div className="drawer-container">
-            <Drawer modal open={isOpen} onClose={onDrawerClose}>
+            <Drawer modal open={isOpen} onClose={onDrawerClose} className="mdc-elevation--z16">
                 <List singleSelection selectedIndex={selectedIndex}>
                     <Link to="/">
                         <ListItem onClick={() => onListItemClick(ListItemIndex.ActiveOwnersList)}>
