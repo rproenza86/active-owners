@@ -25,7 +25,6 @@ export interface IAuthState {
     user: firebase.User;
 }
 
-
 export interface ITeamMember {
     name: string;
     email: string;
@@ -79,3 +78,8 @@ export interface ActionCreator<A> {
 }
 
 export type Reducer<S = IStateTree, A = AnyFSA> = (state: S, action: A) => S;
+
+export interface IDBOpsSimpleResult {
+    ok: boolean;
+    msg: string;
+}

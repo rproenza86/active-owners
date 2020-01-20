@@ -19,10 +19,13 @@ import List, {
     ListItemGraphic,
     ListItemMeta
 } from '@material/react-list';
+
 import Menu from '../Menu/Menu';
+import UpdateTeamAC from '../UpdateTeamAC/UpdateTeamAC';
+
+import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
 import './ActiveOwner.scss';
-import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
 interface IActiveOwnerProps {
     activeOwner: ITeamsMemberHydrated;
@@ -31,6 +34,7 @@ interface IActiveOwnerProps {
 const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
     // menu setup
     const [openMenu, setOpenMenu] = useState(false);
+    const [openUpdateTeamAC, setOpenUpdateTeamAC] = useState(false);
     const [coordinates, setCoordinates] = useState(undefined);
 
     const rightClickCallback = (event: any) => {
@@ -65,6 +69,11 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
         'https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/2.jpg';
     return (
         <>
+            <UpdateTeamAC
+                isOpen={openUpdateTeamAC}
+                currentAO={activeOwner}
+                onCloseUpdateHandler={() => setOpenUpdateTeamAC(!openUpdateTeamAC)}
+            />
             <Card className="mdc-card active-owner-card">
                 <CardPrimaryContent className="active-owner-card__primary-action">
                     <CardMedia wide imageUrl={image} className="active-owner-card__media" />
@@ -110,7 +119,9 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
                 </CardPrimaryContent>
                 <CardActions>
                     <CardActionButtons>
-                        <Button>Update</Button>
+                        <Button onClick={() => setOpenUpdateTeamAC(!openUpdateTeamAC)}>
+                            Update
+                        </Button>
                     </CardActionButtons>
                     <CardActionIcons>
                         <IconButton>

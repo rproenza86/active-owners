@@ -122,8 +122,7 @@ const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers }) => {
 
 const mapStateToProps = (state: IStateTree): ITeamMemberList => {
     return {
-        teamsMembers:
-            state.teamsMembers.map(member => ({ ...member, id: member.id })) || []
+        teamsMembers: state.teamsMembers
     };
 };
 

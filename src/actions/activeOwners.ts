@@ -1,8 +1,12 @@
+import { Dispatch } from 'redux';
+
 import { db } from '../firebase';
 import { FSA, ActionCreator, ITeam, ITeamMember } from '../types';
 import { getTeamsListSuccess } from './teams';
-import { getTeams } from '../services/teams';
+import { getTeams, updateTeam } from '../services/teams';
 import { getTeamsMembers } from '../services/teamsMembers';
+import { sortList } from '../utils/sort';
+import notifyEvent from '../utils/notification';
 
 export const GET_AC_LIST = 'GET_AC_LIST';
 export const GET_AC_LIST_SUCCESS = 'GET_AC_LIST_SUCCESS';
@@ -63,7 +67,7 @@ export const hydrateTeams = (teamsMembers: ITeamMember[], teamsP: ITeam[]): ITea
     return teams;
 };
 
-export const getACList = () => async (dispatch: any) => {
+export const getACList = () => async (dispatch: Dispatch) => {
     try {
         const teams = await getTeams();
         const teamsMembers = await getTeamsMembers();
@@ -72,121 +76,40 @@ export const getACList = () => async (dispatch: any) => {
             teamsMembers,
             teams
         );
+        const teamsMemberHydratedSorted = sortList(
+            teamsMemberHydrated,
+            'teamName'
+        ) as ITeamsMemberHydrated[];
+        dispatch(getACListSuccess(teamsMemberHydratedSorted));
 
-        dispatch(getACListSuccess(teamsMemberHydrated));
-        dispatch(getTeamsListSuccess(hydrateTeams(teamsMembers, teams)));
+        const teamsHydrated = hydrateTeams(teamsMembers, teams);
+        const teamsHydratedSorted = sortList(teamsHydrated, 'name') as ITeam[];
+        dispatch(getTeamsListSuccess(teamsHydratedSorted));
     } catch (error) {
         console.log('Error getting document', error);
     }
 };
 
-export const addUsersBatch = (userP?: any): void => {
-    const users = userP || [
-        {
-            email: 'kevin.berry@coxautoinc.com',
-            location: 'L15P142',
-            name: 'Kevin Berry',
-            slackId: '@kevin',
-            teamId: 'gTFVYDFMqfrLdY6MJ48w'
-        }
-    ];
-
-    users.map((user: any) => {
-        return db
-            .collection('team-members')
-            .add(user)
-            .then(function(docRef) {
-                console.log('Document written with ID: ', docRef.id);
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
+export const updateTeamAO = (teamId: string, aoId: string) => async (dispatch: any) => {
+    try {
+        const result = await updateTeam(teamId, { acId: aoId });
+        if (result.ok) {
+            notifyEvent({
+                type: 'success',
+                message: 'Active Owner Update',
+                description: 'The Team Active Owner was successfully updated '
             });
-    });
-};
 
-export const addTeamsBatch = (): void => {
-    const teams = [
-        {
-            acId: '',
-            location: 'ATL 3003',
-            name: 'Horsepower',
-            logo: ''
-        },
-        {
-            acId: '',
-            location: 'ATL 3003',
-            name: 'Rocket',
-            logo: ''
-        },
-        {
-            acId: '',
-            location: 'ATL 3003',
-            name: 'Unimog',
-            logo: ''
-        },
-        {
-            acId: '',
-            location: 'ATL 3003',
-            name: 'GearShift',
-            logo: ''
-        },
-        {
-            acId: '',
-            location: 'ATL 3003',
-            name: 'Torque',
-            logo: ''
+            dispatch(getACList());
         }
-    ];
-    const users = [
-        {
-            email: 'krunal.thakkar@coxautoinc.com',
-            location: 'L15P142',
-            name: 'Krunal Thakkar',
-            slackId: '@krunal.thakkar',
-            teamId: ''
-        },
-        {
-            email: 'Felix.Guerrero@coxautoinc.com',
-            location: 'L15P142',
-            name: 'Felix Guerrero',
-            slackId: '@felix',
-            teamId: ''
-        },
-        {
-            email: 'sravan.konda@coxautoinc.com',
-            location: 'L15P142',
-            name: 'Sravan Konda',
-            slackId: '@sravan',
-            teamId: ''
-        },
-        {
-            email: 'lennox.antoine2@coxautoinc.com',
-            location: 'L15P142',
-            name: 'Lennox Antoine',
-            slackId: '@lennox',
-            teamId: ''
-        },
-        {
-            email: 'Ethan.Garber@coxautoinc.com',
-            location: 'L15P142',
-            name: 'Ethan Garber',
-            slackId: '@ethan',
-            teamId: ''
-        }
-    ];
+    } catch (error) {
+        notifyEvent({
+            type: 'error',
+            message: 'Active Owner Update',
+            description:
+                'An error happened while attempting to update the Team Active Owner. Update failed'
+        });
 
-    let counter = 0;
-    teams.map(user => {
-        return db
-            .collection('teams')
-            .add(user)
-            .then(function(docRef) {
-                console.log('Document written with ID: ', docRef.id);
-                users[counter++].teamId = docRef.id;
-            })
-            .catch(function(error) {
-                console.error('Error adding document: ', error);
-            })
-            .finally(() => addUsersBatch(users));
-    });
+        console.log(`Error updating team ${teamId}`, error);
+    }
 };
