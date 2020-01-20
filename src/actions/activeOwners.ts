@@ -1,6 +1,5 @@
 import { Dispatch } from 'redux';
 
-import { db } from '../firebase';
 import { FSA, ActionCreator, ITeam, ITeamMember } from '../types';
 import { getTeamsListSuccess } from './teams';
 import { getTeams, updateTeam } from '../services/teams';

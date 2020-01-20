@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserNinja } from '@fortawesome/free-solid-svg-icons';
+import { Breadcrumb, Icon } from 'antd';
+import MaterialIcon from '@material/react-material-icon';
 
 import { ITeam, IStateTree, IDocument } from '../../types';
 import DetailsListUI, { IDetailsListDocumentsProps, classNames } from '../DetailsList/DetailsList';
@@ -83,7 +85,16 @@ const TeamList: React.FC<ITeamListProps> = ({ teams }) => {
 
     return (
         <>
-            <h1>Teams members list</h1>
+            <Breadcrumb>
+                <Breadcrumb.Item>
+                    <Icon type="home" />
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                    <MaterialIcon icon="people_alt" />
+                    List of Teams
+                </Breadcrumb.Item>
+            </Breadcrumb>
+
             <DetailsListUI items={config.items} columns={config.columns} />
         </>
     );

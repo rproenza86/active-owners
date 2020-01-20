@@ -37,6 +37,8 @@ const UpdateTeamAC: React.FC<IUpdateTeamACProps> = ({
 
         if (action === 'confirm' && currentAO.id !== selectedIndexState) {
             updateTeam && updateTeam(currentAO.teamId, selectedIndexState);
+        } else {
+            setSelectedIndexState(currentAO.id);
         }
     };
 

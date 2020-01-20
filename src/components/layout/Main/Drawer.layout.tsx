@@ -57,14 +57,14 @@ const AppDrawer: React.FC<IAppDrawerProps> = ({
                     <Link to="/">
                         <ListItem onClick={() => onListItemClick(ListItemIndex.ActiveOwnersList)}>
                             <ListItemGraphic graphic={<MaterialIcon icon="alarm" />} />
-                            <ListItemText primaryText="Active Owners List" />
+                            <ListItemText primaryText="List of Active Owners" />
                         </ListItem>
                     </Link>
 
                     <Link to="/teams">
                         <ListItem onClick={() => onListItemClick(ListItemIndex.TeamList)}>
                             <ListItemGraphic graphic={<MaterialIcon icon="people_alt" />} />
-                            <ListItemText primaryText="Team List" />
+                            <ListItemText primaryText="List of Teams" />
                         </ListItem>
                     </Link>
 
@@ -73,7 +73,7 @@ const AppDrawer: React.FC<IAppDrawerProps> = ({
                             onClick={() => onListItemClick(ListItemIndex.RegisteredMemberList)}
                         >
                             <ListItemGraphic graphic={<MaterialIcon icon="emoji_people" />} />
-                            <ListItemText primaryText="Registered Member List" />
+                            <ListItemText primaryText="List of Team Members" />
                         </ListItem>
                     </Link>
                 </List>

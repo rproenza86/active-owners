@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Breadcrumb, Icon } from 'antd';
 
 import Splash from '../Splash/Splash';
 import Main from '../layout/Main/Main.layout';
@@ -12,6 +13,8 @@ import { IStateTree } from '../../types';
 import { Cell, Row } from '@material/react-layout-grid';
 import TeamList from '../TeamList/TeamList';
 import TeamMemberList from '../TeamMemberList/TeamMemberList';
+
+import './App.css';
 
 interface IApp {
     isAuthenticated: boolean;
@@ -32,13 +35,21 @@ const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwner
     }, 3000);
 
     const Home = () => (
-        <Row>
-            {activeOwners.map((ac, index) => (
-                <Cell desktopColumns={3} phoneColumns={4} tabletColumns={4} key={index}>
-                    <ActiveOwner activeOwner={ac} />
-                </Cell>
-            ))}
-        </Row>
+        <>
+            <Breadcrumb>
+                <Breadcrumb.Item>
+                    <Icon type="home" />
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>List of Active Owners</Breadcrumb.Item>
+            </Breadcrumb>
+            <Row>
+                {activeOwners.map((ac, index) => (
+                    <Cell desktopColumns={3} phoneColumns={4} tabletColumns={4} key={index}>
+                        <ActiveOwner activeOwner={ac} />
+                    </Cell>
+                ))}
+            </Row>
+        </>
     );
 
     return (

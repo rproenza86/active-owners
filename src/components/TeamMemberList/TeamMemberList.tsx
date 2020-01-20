@@ -6,6 +6,8 @@ import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 import DetailsListUI, { IDetailsListDocumentsProps, classNames } from '../DetailsList/DetailsList';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserNinja } from '@fortawesome/free-solid-svg-icons';
+import { Breadcrumb, Icon } from 'antd';
+import MaterialIcon from '@material/react-material-icon';
 
 interface ITeamMemberList {
     teamsMembers: ITeamsMemberHydrated[];
@@ -115,6 +117,15 @@ const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers }) => {
     return (
         <>
             <h1>Teams members list</h1>
+            <Breadcrumb>
+                <Breadcrumb.Item>
+                    <Icon type="home" />
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                    <MaterialIcon icon="emoji_people" />
+                    List of Team Members
+                </Breadcrumb.Item>
+            </Breadcrumb>
             <DetailsListUI items={config.items} columns={config.columns} />
         </>
     );

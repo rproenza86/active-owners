@@ -1,3 +1,13 @@
 .App {
     text-align: center;
 }
+
+.ant-breadcrumb {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.ant-breadcrumb .material-icons {
+    position: relative;
+    bottom: -6px;
+}
