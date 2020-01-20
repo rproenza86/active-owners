@@ -1,25 +1,17 @@
 import { db } from '../firebase';
-import { FSA, ActionCreator, ITeamsState, ITeamsObject, ITeam } from '../types';
+import { FSA, ActionCreator, ITeam, ITeamMember } from '../types';
 import { getTeamsListSuccess } from './teams';
+import { getTeams } from '../services/teams';
+import { getTeamsMembers } from '../services/teamsMembers';
 
 export const GET_AC_LIST = 'GET_AC_LIST';
 export const GET_AC_LIST_SUCCESS = 'GET_AC_LIST_SUCCESS';
 export const GET_AC_LIST_FAILURE = 'GET_AC_LIST_FAILURE';
 
-interface ITeamMember {
-    name: string;
-    email: string;
-    location: string;
-    slackId: string;
-    teamId: string;
-    teamMemberId: string;
-}
-
 export interface ITeamsMemberHydrated extends ITeamMember {
     logo: string;
     teamName: string;
     isActiveOwner: boolean;
-    id?: string;
 }
 
 interface GetACListSuccessAction extends FSA<typeof GET_AC_LIST_SUCCESS, ITeamsMemberHydrated[]> {}
@@ -35,83 +27,57 @@ const getACListSuccess: ActionCreator<GetACListSuccessAction> = (
 
 export const getTeamsMemberHydrated = (
     teamsMembers: ITeamMember[],
-    teams: ITeamsState
+    teams: ITeam[]
 ): ITeamsMemberHydrated[] =>
     teamsMembers.map((member: ITeamMember) => {
-        const { location: teamLocation, logo, name: teamName, acId } = teams[member.teamId];
+        let team: ITeam = {} as ITeam;
+        for (const key in teams) {
+            if (teams[key].id === member.teamId) {
+                team = teams[key];
+            }
+        }
+        const { location: teamLocation, logo, name: teamName, acId } = team;
 
         const teamsMemberHydrated = {
             ...member,
             logo,
             location: `${teamLocation} ${member.location}`,
             teamName,
-            isActiveOwner: acId === member.teamMemberId ? true : false
+            isActiveOwner: acId === member.id ? true : false
         };
 
         return teamsMemberHydrated;
     });
 
-export const hydrateTeams = (teamsMembers: ITeamMember[], teamsP: ITeamsState): ITeam[] => {
-    const teamsIds = Object.getOwnPropertyNames(teamsP);
-    const teams: ITeam[] = [];
-    const teamsMembersHash: Array<{ [index: string]: string }> = [];
+export const hydrateTeams = (teamsMembers: ITeamMember[], teamsP: ITeam[]): ITeam[] => {
+    const teams: ITeam[] = [...teamsP];
 
     for (const member of teamsMembers) {
-        (teamsMembersHash as any)[member.teamMemberId] = member.name;
+        for (const team of teams) {
+            if (team.acId === member.id) {
+                team.activeOwnerName = member.name;
+            }
+        }
     }
-
-    teamsIds.map(id =>
-        teams.push({
-            ...teamsP[id],
-            id,
-            activeOwnerName: teamsMembersHash[(teamsP as any)[id].acId] as any
-        })
-    );
 
     return teams;
 };
 
-export const getACList = () => (dispatch: any) => {
-    const teamsRef = db.collection('teams');
-    const teamsMembersRef = db.collection('team-members');
+export const getACList = () => async (dispatch: any) => {
+    try {
+        const teams = await getTeams();
+        const teamsMembers = await getTeamsMembers();
 
-    let getTeamsDoc = (): Promise<ITeamsState> =>
-        teamsRef.get().then(querySnapshot => {
-            const teams: ITeamsState = {};
+        const teamsMemberHydrated: ITeamsMemberHydrated[] = getTeamsMemberHydrated(
+            teamsMembers,
+            teams
+        );
 
-            querySnapshot.forEach(doc => {
-                teams[doc.id] = doc.data() as ITeamsObject;
-            });
-
-            return teams;
-        });
-
-    let teamsMembersDoc = (): Promise<ITeamMember[]> =>
-        teamsMembersRef.get().then(querySnapshot => {
-            const teamsMembers: ITeamMember[] = [];
-
-            querySnapshot.forEach(doc => {
-                teamsMembers.push({ teamMemberId: doc.id, ...doc.data() } as ITeamMember);
-            });
-
-            return teamsMembers;
-        });
-
-    Promise.all([getTeamsDoc(), teamsMembersDoc()])
-        .then(values => {
-            const [teams, teamsMembers] = values;
-
-            const teamsMemberHydrated: ITeamsMemberHydrated[] = getTeamsMemberHydrated(
-                teamsMembers,
-                teams
-            );
-
-            dispatch(getACListSuccess(teamsMemberHydrated));
-            dispatch(getTeamsListSuccess(hydrateTeams(teamsMembers, teams)));
-        })
-        .catch(err => {
-            console.log('Error getting document', err);
-        });
+        dispatch(getACListSuccess(teamsMemberHydrated));
+        dispatch(getTeamsListSuccess(hydrateTeams(teamsMembers, teams)));
+    } catch (error) {
+        console.log('Error getting document', error);
+    }
 };
 
 export const addUsersBatch = (userP?: any): void => {

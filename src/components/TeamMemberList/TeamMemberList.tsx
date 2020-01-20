@@ -27,7 +27,7 @@ const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers }) => {
                 ariaLabel: 'Column operations for File type, Press to sort on File type',
                 iconName: 'Engineers',
                 isIconOnly: true,
-                fieldName: 'teamMemberId',
+                fieldName: 'id',
                 minWidth: 16,
                 maxWidth: 40,
                 onRender: (item: IDocument) => {
@@ -123,7 +123,7 @@ const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers }) => {
 const mapStateToProps = (state: IStateTree): ITeamMemberList => {
     return {
         teamsMembers:
-            state.teamsMembers.map(member => ({ ...member, id: member.teamMemberId })) || []
+            state.teamsMembers.map(member => ({ ...member, id: member.id })) || []
     };
 };
 

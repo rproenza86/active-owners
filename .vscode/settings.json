@@ -28,20 +28,20 @@
     "nodeTdd.testScript": "test-lcov-only",
     "workbench.colorCustomizations": {
         // top bar
-        "titleBar.activeBackground": "#FF1744",
-        "titleBar.inactiveBackground": "#ff2551bf",
+        "titleBar.activeBackground": "#304FFE",
+        "titleBar.inactiveBackground": "#536DFE",
         "titleBar.activeForeground": "#ffffff",
         "titleBar.inactiveForeground": "#cccccc",
         // terminal panel
-        "panel.background": "#673AB7",
-        "panel.border": "#FFFF00",
+        "panel.background": "#01579B",
+        "panel.border": "#82B1FF",
         "panelTitle.activeForeground": "#FFFF8D",
         // panel with Explorer, Debugger ..
-        "activityBar.background": "#FF1744",
+        "activityBar.background": "#304FFE",
         "activityBar.activeForeground": "#ffffff",
         "activityBar.inactiveForeground": "#ccccccd6",
         // footer
-        "statusBar.background": "#FF1744",
+        "statusBar.background": "#304FFE",
         "statusBar.foreground": "#ffffff",
         "statusBarItem.hoverBackground": "#673AB7"
     }

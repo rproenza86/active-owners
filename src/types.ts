@@ -25,6 +25,16 @@ export interface IAuthState {
     user: firebase.User;
 }
 
+
+export interface ITeamMember {
+    name: string;
+    email: string;
+    location: string;
+    slackId: string;
+    teamId: string;
+    id: string;
+}
+
 export interface ITeamsMembersState extends Array<ITeamsMemberHydrated> {}
 
 export interface ITeamsObject {
