@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import Dialog, {
     DialogTitle,
@@ -12,8 +12,9 @@ import TextField, { HelperText, Input } from '@material/react-text-field';
 import { Button } from '@material/react-button';
 import { Tag } from 'antd';
 
-import { addTeamMember } from '../../actions/teamMembers';
-import { IStateTree, ITeam, ITeamMemberCore } from '../../types';
+import { addTeamMember, updateTeamMember } from '../../actions/teamMembers';
+import { IStateTree, ITeam, ITeamMemberCore, ITeamMember } from '../../types';
+import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
 import './TeamMember.scss';
 
@@ -23,6 +24,8 @@ interface IUpdateTeamACProps {
     teams?: ITeam[];
     teamIdP?: string;
     addMember?: (teamMember: ITeamMemberCore) => any;
+    updateMember?: (teamMemberId: string, teamMember: ITeamMember) => any;
+    teamMember?: ITeamsMemberHydrated;
 }
 
 const TeamMember: React.FC<IUpdateTeamACProps> = ({
@@ -30,7 +33,9 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
     teams,
     teamIdP,
     addMember,
-    onCloseUpdateHandler
+    onCloseUpdateHandler,
+    teamMember,
+    updateMember
 }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -38,6 +43,16 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
     const [slackId, setLackId] = useState('');
     const [teamId, setTeamId] = useState(teamIdP || (teams ? teams[0].id : ''));
     const [errorMessage, setErrorMessage] = useState('');
+
+    useEffect(() => {
+        if (teamMember) {
+            setName(teamMember.name);
+            setEmail(teamMember.email);
+            setLocation(teamMember.location);
+            setLackId(teamMember.slackId);
+            setTeamId(teamMember.teamId);
+        }
+    }, [teamMember]);
 
     const isValidForm = (): boolean => {
         if (name === '') {
@@ -60,16 +75,21 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
             if (!isValidForm()) {
                 setErrorMessage('Missing required information. Please, complete form.');
             } else {
-                const teamMember: ITeamMemberCore = {
+                const teamMemberObj: ITeamMemberCore = {
                     name,
                     email,
-                    location,
+                    location: location.split(' ')[2],
                     slackId,
                     teamId
                 };
-                addMember && addMember(teamMember);
+                if (teamMember) {
+                    updateMember && updateMember(teamMember.id, teamMemberObj as ITeamMember);
+                } else {
+                    addMember && addMember(teamMemberObj);
+                }
+                return onCloseUpdateHandler(true);
             }
-            return;
+            onCloseUpdateHandler();
         } else {
             onCloseUpdateHandler();
         }
@@ -175,7 +195,9 @@ const mapStateToProps = (state: IStateTree, props: IUpdateTeamACProps): IUpdateT
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        addMember: (teamMember: ITeamMemberCore) => dispatch(addTeamMember(teamMember))
+        addMember: (teamMember: ITeamMemberCore) => dispatch(addTeamMember(teamMember)),
+        updateMember: (teamMemberId: string, teamMember: ITeamMember) =>
+            dispatch(updateTeamMember(teamMemberId, teamMember))
     };
 };
 

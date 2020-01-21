@@ -21,7 +21,7 @@ const TeamList: React.FC<ITeamListProps> = ({ teams }) => {
         items: teams,
         columns: [
             {
-                key: 'column1',
+                key: 'column01',
                 name: 'ID',
                 className: classNames.fileIconCell,
                 iconClassName: classNames.fileIconHeaderIcon,

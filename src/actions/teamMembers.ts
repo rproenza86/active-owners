@@ -1,7 +1,7 @@
 import { ITeamMemberCore } from '../types';
 import { notifyEvent } from '../utils/notification';
 import { getACList } from './activeOwners';
-import { createDocument } from '../services/commonDbOps';
+import { createDocument, updateDocument } from '../services/commonDbOps';;
 
 export const addTeamMember = (teamMember: ITeamMemberCore) => async (dispatch: any) => {
     try {
@@ -25,5 +25,31 @@ export const addTeamMember = (teamMember: ITeamMemberCore) => async (dispatch: a
         });
 
         console.log(`Error attempting to add ${teamMember.name} as new team member`, error);
+    }
+};
+
+export const updateTeamMember = (
+    teamMemberId: string,
+    updatedTeamMember: ITeamMemberCore
+) => async (dispatch: any) => {
+    try {
+        const result = await updateDocument('team-members', teamMemberId, updatedTeamMember);
+        if (result.ok) {
+            notifyEvent({
+                type: 'success',
+                message: 'Team Member Update',
+                description: `The Team Member ${updatedTeamMember.name} was successfully updated`
+            });
+
+            dispatch(getACList());
+        }
+    } catch (error) {
+        notifyEvent({
+            type: 'error',
+            message: 'Team Member Update',
+            description: `An error happened while attempting to update the Team Member ${updatedTeamMember.name}. Update failed`
+        });
+
+        console.log(`Error updating team ${updatedTeamMember.name}`, error);
     }
 };

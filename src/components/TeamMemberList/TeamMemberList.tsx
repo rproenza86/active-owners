@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { connect } from 'react-redux';
-import { IStateTree, IDocument } from '../../types';
+import { IStateTree } from '../../types';
 import { ITeamsMemberHydrated } from '../../actions/activeOwners';
-import DetailsListUI, { IDetailsListDocumentsProps, classNames } from '../DetailsList/DetailsList';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserNinja } from '@fortawesome/free-solid-svg-icons';
 import { Breadcrumb, Icon } from 'antd';
 import MaterialIcon from '@material/react-material-icon';
+import IconButton from '@material/react-icon-button';
+
+import DetailsListUI, { IDetailsListDocumentsProps, classNames } from '../DetailsList/DetailsList';
+import TeamMember from '../TeamMember/TeamMember';
 
 interface ITeamMemberList {
     teamsMembers: ITeamsMemberHydrated[];
@@ -18,6 +19,15 @@ export interface ITeamMemberListDispatchProps {}
 export type ITeamMemberListProps = ITeamMemberList & ITeamMemberListDispatchProps;
 
 const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers }) => {
+    const [updateNumber, setUpdateNumber] = useState(0);
+    const [teamMember, setTeamMember] = useState({} as ITeamsMemberHydrated);
+    const [editTeamMember, setEditTeamMember] = useState(false);
+
+    const _onEditClick = (item: ITeamsMemberHydrated): void => {
+        setTeamMember(item);
+        setEditTeamMember(!editTeamMember);
+    };
+
     const config: IDetailsListDocumentsProps<ITeamsMemberHydrated[]> = {
         items: teamsMembers,
         columns: [
@@ -30,10 +40,19 @@ const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers }) => {
                 iconName: 'Engineers',
                 isIconOnly: true,
                 fieldName: 'id',
-                minWidth: 16,
-                maxWidth: 40,
-                onRender: (item: IDocument) => {
-                    return <FontAwesomeIcon icon={faUserNinja} />;
+                minWidth: 100,
+                maxWidth: 110,
+                onRender: (item: ITeamsMemberHydrated) => {
+                    return (
+                        <>
+                            <IconButton onClick={() => _onEditClick(item)}>
+                                <MaterialIcon icon="edit" />
+                            </IconButton>
+                            <IconButton>
+                                <MaterialIcon icon="delete_forever" />
+                            </IconButton>
+                        </>
+                    );
                 }
             },
             {
@@ -127,6 +146,17 @@ const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers }) => {
                 </Breadcrumb.Item>
             </Breadcrumb>
             <DetailsListUI items={config.items} columns={config.columns} />
+            <TeamMember
+                isOpen={editTeamMember}
+                teamIdP={teamMember.teamId}
+                teamMember={teamMember}
+                onCloseUpdateHandler={(isConfirm?: boolean) => {
+                    if (isConfirm) {
+                        setUpdateNumber(updateNumber + 1);
+                    }
+                    setEditTeamMember(!editTeamMember);
+                }}
+            />
         </>
     );
 };
