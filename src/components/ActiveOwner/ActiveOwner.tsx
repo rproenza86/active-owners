@@ -22,6 +22,7 @@ import List, {
 
 import Menu from '../Menu/Menu';
 import UpdateTeamAC from '../UpdateTeamAC/UpdateTeamAC';
+import TeamMember from '../TeamMember/TeamMember';
 
 import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
@@ -36,6 +37,7 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
     const [openMenu, setOpenMenu] = useState(false);
     const [openUpdateTeamAC, setOpenUpdateTeamAC] = useState(false);
     const [coordinates, setCoordinates] = useState(undefined);
+    const [addTeamMember, setAddTeamMember] = useState(false);
 
     const rightClickCallback = (event: any) => {
         setOpenMenu(!openMenu);
@@ -57,7 +59,7 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
         },
         {
             optionName: 'Add Member',
-            optionCallBack: dummyOptionCallBack
+            optionCallBack: () => setAddTeamMember(!addTeamMember)
         },
         {
             optionName: 'Change Rotation',
@@ -72,7 +74,16 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
             <UpdateTeamAC
                 isOpen={openUpdateTeamAC}
                 currentAO={activeOwner}
-                onCloseUpdateHandler={() => setOpenUpdateTeamAC(!openUpdateTeamAC)}
+                onCloseUpdateHandler={(keepOpen?: boolean) =>
+                    setOpenUpdateTeamAC(keepOpen || !openUpdateTeamAC)
+                }
+            />
+            <TeamMember
+                isOpen={addTeamMember}
+                teamIdP={activeOwner.teamId}
+                onCloseUpdateHandler={() => {
+                    setAddTeamMember(!addTeamMember);
+                }}
             />
             <Card className="mdc-card active-owner-card">
                 <CardPrimaryContent className="active-owner-card__primary-action">
@@ -126,9 +137,6 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
                     <CardActionIcons>
                         <IconButton>
                             <MaterialIcon icon="favorite_border" />
-                        </IconButton>
-                        <IconButton>
-                            <MaterialIcon icon="share" />
                         </IconButton>
                         <IconButton onClick={event => rightClickCallback(event)}>
                             <MaterialIcon icon="more_vert" />

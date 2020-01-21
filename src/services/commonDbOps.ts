@@ -37,3 +37,23 @@ export async function updateDocument<T>(
             return { ok: true, msg: errorMsg };
         });
 }
+
+export async function createDocument<T>(
+    collectionName: string,
+    updateObj: any
+): Promise<IDBOpsSimpleResult> {
+    return db
+        .collection(collectionName)
+        .add(updateObj)
+        .then(docRef => {
+            console.log('Document written with ID: ', docRef.id);
+            const msg = 'Document successfully updated!';
+            console.log(msg);
+            return { ok: true, msg };
+        })
+        .catch(function(error) {
+            const errorMsg = 'Error updating document: ';
+            console.error(errorMsg, error);
+            return { ok: true, msg: errorMsg };
+        });
+}

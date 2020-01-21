@@ -1,0 +1,15 @@
+@import '@material/react-dialog/index.scss';
+@import '@material/react-text-field/index.scss';
+@import '@material/react-list/index.scss';
+@import '@material/react-menu-surface/index.scss';
+@import '@material/react-menu/index.scss';
+@import '@material/react-select/index.scss';
+
+.mdc-dialog .mdc-dialog__scrim {
+    backdrop-filter: blur(5px);
+    background-color: rgba(244, 248, 252, 0.69);
+}
+
+.team-member {
+    min-width: 400px;
+}

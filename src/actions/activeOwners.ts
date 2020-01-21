@@ -5,7 +5,7 @@ import { getTeamsListSuccess } from './teams';
 import { getTeams, updateTeam } from '../services/teams';
 import { getTeamsMembers } from '../services/teamsMembers';
 import { sortList } from '../utils/sort';
-import notifyEvent from '../utils/notification';
+import { notifyEvent } from '../utils/notification';
 
 export const GET_AC_LIST = 'GET_AC_LIST';
 export const GET_AC_LIST_SUCCESS = 'GET_AC_LIST_SUCCESS';
