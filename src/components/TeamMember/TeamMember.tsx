@@ -89,7 +89,6 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
                 }
                 return onCloseUpdateHandler(true);
             }
-            onCloseUpdateHandler();
         } else {
             onCloseUpdateHandler();
         }

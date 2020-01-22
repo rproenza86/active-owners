@@ -18,9 +18,7 @@ showConfirm = function({ title, content, onOkCallback }) {
         title,
         content,
         onOk() {
-            return new Promise((resolve, reject) => {
-                resolve(onOkCallback());
-            }).catch(() => console.log('Oops errors!'));
+            onOkCallback();
         },
         onCancel() {}
     });

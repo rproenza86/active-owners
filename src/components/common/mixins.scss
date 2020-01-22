@@ -1,0 +1,28 @@
+@import '@material/elevation/mdc-elevation';
+
+@mixin blurred-backdrop($deep: 0) {
+    backdrop-filter: blur(5px);
+
+    @if $deep != 0 {
+        background-color: rgba(244, 248, 252, 0.29);
+    }
+
+    @if $deep == 0 {
+        background-color: rgba(244, 248, 252, 0.69);
+    }
+
+    transition: mdc-elevation-transition-value(),
+        /* Configure opacity to use same duration and easing values as elevation */ opacity
+            $mdc-elevation-transition-duration $mdc-elevation-transition-timing-function;
+    opacity: 0.7;
+    will-change: $mdc-elevation-property, opacity;
+}
+
+.ant-modal-mask {
+    @include blurred-backdrop;
+}
+
+.ant-modal-confirm .ant-modal-body {
+    @include mdc-elevation(12);
+    border-radius: 4px;
+}

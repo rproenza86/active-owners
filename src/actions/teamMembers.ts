@@ -21,7 +21,7 @@ export const addTeamMember = (teamMember: ITeamMemberCore) => async (dispatch: a
             message: 'Team Member Added',
             description:
                 // eslint-disable-next-line no-template-curly-in-string
-                'An error happened while attempting to add ${teamMember.name} as new team member. Update failed'
+                `An error happened while attempting to add ${teamMember.name} as new team member. Addition failed`
         });
 
         console.log(`Error attempting to add ${teamMember.name} as new team member`, error);
@@ -61,7 +61,7 @@ export const deleteTeamMember = (teamMember: ITeamMember) => {
             if (result.ok) {
                 notifyEvent({
                     type: 'success',
-                    message: 'Team Member Update',
+                    message: 'Team Member Deletion',
                     description: `The Team Member ${teamMember.name} was successfully deleted`
                 });
                 dispatch(getACList());
@@ -69,7 +69,7 @@ export const deleteTeamMember = (teamMember: ITeamMember) => {
         } catch (error) {
             notifyEvent({
                 type: 'error',
-                message: 'Team Member Update',
+                message: 'Team Member Deletion',
                 description: `An error happened while attempting to delete the Team Member ${teamMember.name}. Deletion failed`
             });
             console.log(`Error deleting member ${teamMember.name}`, error);

@@ -1,6 +1,7 @@
 @import '@material/react-drawer/index.scss';
 @import '@material/react-list/index.scss';
 @import '@material/react-material-icon/index.scss';
+@import '../../common/mixins.scss';
 
 .drawer-app-content {
     flex: auto;
@@ -31,6 +32,5 @@
 }
 
 .mdc-drawer--modal + .mdc-drawer-scrim {
-    backdrop-filter: blur(5px);
-    background-color: rgba(244, 248, 252, 0.29);
+    @include blurred-backdrop(1);
 }

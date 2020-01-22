@@ -1,6 +1,7 @@
 @import '@material/react-dialog/index.scss';
 
+@import '../common/mixins.scss';
+
 .mdc-dialog .mdc-dialog__scrim {
-    backdrop-filter: blur(5px);
-    background-color: rgba(244, 248, 252, 0.69);
+    @include blurred-backdrop;
 }
