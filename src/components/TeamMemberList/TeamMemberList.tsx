@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { connect } from 'react-redux';
-import { IStateTree } from '../../types';
+import { IStateTree, ITeamMember } from '../../types';
 import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 import { Breadcrumb, Icon } from 'antd';
 import MaterialIcon from '@material/react-material-icon';
@@ -9,23 +9,36 @@ import IconButton from '@material/react-icon-button';
 
 import DetailsListUI, { IDetailsListDocumentsProps, classNames } from '../DetailsList/DetailsList';
 import TeamMember from '../TeamMember/TeamMember';
+import { deleteTeamMember } from '../../actions/teamMembers';
+import showConfirm, { IConfirmConfig } from '../../utils/confirm';
 
 interface ITeamMemberList {
     teamsMembers: ITeamsMemberHydrated[];
 }
 
-export interface ITeamMemberListDispatchProps {}
+export interface ITeamMemberListDispatchProps {
+    deleteMember?: (teamMember: ITeamMember) => any;
+}
 
 export type ITeamMemberListProps = ITeamMemberList & ITeamMemberListDispatchProps;
 
-const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers }) => {
-    const [updateNumber, setUpdateNumber] = useState(0);
+const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers, deleteMember }) => {
     const [teamMember, setTeamMember] = useState({} as ITeamsMemberHydrated);
-    const [editTeamMember, setEditTeamMember] = useState(false);
+    const [addOrEditTeamMember, setAddOrEditTeamMember] = useState(false);
 
     const _onEditClick = (item: ITeamsMemberHydrated): void => {
         setTeamMember(item);
-        setEditTeamMember(!editTeamMember);
+        setAddOrEditTeamMember(!addOrEditTeamMember);
+    };
+
+    const _onDeleteClick = (item: ITeamsMemberHydrated): void => {
+        const deleteConfirmConfig: IConfirmConfig = {
+            title: 'Confirm Deletion!',
+            content: "Do you want to delete these Team's Member?",
+            onOkCallback: () => deleteMember && deleteMember(item)
+        };
+
+        showConfirm(deleteConfirmConfig);
     };
 
     const config: IDetailsListDocumentsProps<ITeamsMemberHydrated[]> = {
@@ -48,7 +61,7 @@ const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers }) => {
                             <IconButton onClick={() => _onEditClick(item)}>
                                 <MaterialIcon icon="edit" />
                             </IconButton>
-                            <IconButton>
+                            <IconButton onClick={() => _onDeleteClick(item)}>
                                 <MaterialIcon icon="delete_forever" />
                             </IconButton>
                         </>
@@ -135,7 +148,6 @@ const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers }) => {
 
     return (
         <>
-            <h1>Teams members list</h1>
             <Breadcrumb>
                 <Breadcrumb.Item>
                     <Icon type="home" />
@@ -145,16 +157,23 @@ const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers }) => {
                     List of Team Members
                 </Breadcrumb.Item>
             </Breadcrumb>
-            <DetailsListUI items={config.items} columns={config.columns} />
+            <DetailsListUI
+                items={config.items}
+                columns={config.columns}
+                withAddBtn
+                createButtonConfig={{
+                    text: 'Add New Member',
+                    onClickHandler: () => {
+                        _onEditClick({} as ITeamsMemberHydrated);
+                    }
+                }}
+            />
             <TeamMember
-                isOpen={editTeamMember}
+                isOpen={addOrEditTeamMember}
                 teamIdP={teamMember.teamId}
                 teamMember={teamMember}
-                onCloseUpdateHandler={(isConfirm?: boolean) => {
-                    if (isConfirm) {
-                        setUpdateNumber(updateNumber + 1);
-                    }
-                    setEditTeamMember(!editTeamMember);
+                onCloseUpdateHandler={() => {
+                    setAddOrEditTeamMember(!addOrEditTeamMember);
                 }}
             />
         </>
@@ -168,7 +187,9 @@ const mapStateToProps = (state: IStateTree): ITeamMemberList => {
 };
 
 const mapDispatchToProps = (dispatch: any) => {
-    return {};
+    return {
+        deleteMember: (teamMember: ITeamMember) => dispatch(deleteTeamMember(teamMember))
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TeamMemberList);

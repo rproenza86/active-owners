@@ -57,3 +57,23 @@ export async function createDocument<T>(
             return { ok: true, msg: errorMsg };
         });
 }
+
+export async function deleteDocument<T>(
+    collectionName: string,
+    docId: string
+): Promise<IDBOpsSimpleResult> {
+    return db
+        .collection(collectionName)
+        .doc(docId)
+        .delete()
+        .then(() => {
+            const msg = 'Document successfully deleted!';
+            console.log(msg);
+            return { ok: true, msg };
+        })
+        .catch(function(error) {
+            const errorMsg = `Error deleting document: ${docId}`;
+            console.error(errorMsg, error);
+            return { ok: true, msg: errorMsg };
+        });
+}

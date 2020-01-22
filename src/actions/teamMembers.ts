@@ -1,7 +1,7 @@
-import { ITeamMemberCore } from '../types';
+import { ITeamMemberCore, ITeamMember } from '../types';
 import { notifyEvent } from '../utils/notification';
 import { getACList } from './activeOwners';
-import { createDocument, updateDocument } from '../services/commonDbOps';;
+import { createDocument, updateDocument, deleteDocument } from '../services/commonDbOps';
 
 export const addTeamMember = (teamMember: ITeamMemberCore) => async (dispatch: any) => {
     try {
@@ -52,4 +52,27 @@ export const updateTeamMember = (
 
         console.log(`Error updating team ${updatedTeamMember.name}`, error);
     }
+};
+
+export const deleteTeamMember = (teamMember: ITeamMember) => {
+    return async (dispatch: any) => {
+        try {
+            const result = await deleteDocument('team-members', teamMember.id);
+            if (result.ok) {
+                notifyEvent({
+                    type: 'success',
+                    message: 'Team Member Update',
+                    description: `The Team Member ${teamMember.name} was successfully deleted`
+                });
+                dispatch(getACList());
+            }
+        } catch (error) {
+            notifyEvent({
+                type: 'error',
+                message: 'Team Member Update',
+                description: `An error happened while attempting to delete the Team Member ${teamMember.name}. Deletion failed`
+            });
+            console.log(`Error deleting member ${teamMember.name}`, error);
+        }
+    };
 };

@@ -1,16 +1,13 @@
 import * as React from 'react';
 import { TextField } from 'office-ui-fabric-react/lib/TextField';
-import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 import { Fabric } from 'office-ui-fabric-react/lib/Fabric';
 import { Announced } from 'office-ui-fabric-react/lib/Announced';
 import {
     DetailsList,
     DetailsListLayoutMode,
-    Selection,
     SelectionMode,
     IColumn
 } from 'office-ui-fabric-react/lib/DetailsList';
-import { MarqueeSelection } from 'office-ui-fabric-react/lib/MarqueeSelection';
 import { mergeStyleSets } from 'office-ui-fabric-react/lib/Styling';
 
 import { registerIcons } from '@uifabric/styling';
@@ -19,6 +16,8 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { initializeIcons } from '@uifabric/icons';
 import { ITeam } from '../../types';
 import { ITeamsMemberHydrated } from '../../actions/activeOwners';
+
+import { CreateButton, ICreateButtonConfig } from './CreateButton';
 
 import './DetailsList.scss';
 
@@ -76,12 +75,13 @@ const controlStyles = {
 export interface IDetailsListDocumentsProps<T> {
     columns: IColumn[];
     items: T;
+    withAddBtn?: boolean;
+    createButtonConfig?: ICreateButtonConfig;
 }
 
 interface IDetailsListDocumentsState<T> {
     columns: IColumn[];
     items: T;
-    selectionDetails: string;
     isModalSelection: boolean;
     isCompactMode: boolean;
     announcedMessage?: string;
@@ -93,7 +93,6 @@ class DetailsListUI extends React.Component<
     IDetailsListDocumentsProps<DetailsListUIConfigType>,
     IDetailsListDocumentsState<DetailsListUIConfigType>
 > {
-    private _selection: Selection;
     private _allItems: DetailsListUIConfigType;
 
     constructor(props: IDetailsListDocumentsProps<DetailsListUIConfigType>) {
@@ -108,18 +107,9 @@ class DetailsListUI extends React.Component<
             onColumnClick: this._onColumnClick
         }));
 
-        this._selection = new Selection({
-            onSelectionChanged: () => {
-                this.setState({
-                    selectionDetails: this._getSelectionDetails()
-                });
-            }
-        });
-
         this.state = {
             items: this._allItems,
             columns: columns,
-            selectionDetails: this._getSelectionDetails(),
             isModalSelection: false,
             isCompactMode: false,
             announcedMessage: undefined
@@ -132,64 +122,40 @@ class DetailsListUI extends React.Component<
     }
 
     public render() {
-        const {
-            columns,
-            isCompactMode,
-            items,
-            selectionDetails,
-            isModalSelection,
-            announcedMessage
-        } = this.state;
+        const { withAddBtn, createButtonConfig } = this.props;
+        const { columns, isCompactMode, items, isModalSelection, announcedMessage } = this.state;
 
         return (
             <Fabric>
                 <div className={classNames.controlWrapper}>
-                    <Toggle
-                        label="Enable compact mode"
-                        checked={isCompactMode}
-                        onChange={this._onChangeCompactMode}
-                        onText="Compact"
-                        offText="Normal"
-                        styles={controlStyles}
-                    />
-                    <Toggle
-                        label="Enable modal selection"
-                        checked={isModalSelection}
-                        onChange={this._onChangeModalSelection}
-                        onText="Modal"
-                        offText="Normal"
-                        styles={controlStyles}
-                    />
                     <TextField
                         label="Filter by name:"
                         onChange={this._onChangeText}
                         styles={controlStyles}
                     />
+
+                    {withAddBtn && createButtonConfig && <CreateButton config={createButtonConfig} />}
+
                     <Announced message={`Number of items after filter applied: ${items.length}.`} />
                 </div>
-                <div className={classNames.selectionDetails}>{selectionDetails}</div>
-                <Announced message={selectionDetails} />
                 {announcedMessage ? <Announced message={announcedMessage} /> : undefined}
                 {isModalSelection ? (
-                    <MarqueeSelection selection={this._selection}>
-                        <DetailsList
-                            items={items}
-                            compact={isCompactMode}
-                            columns={columns}
-                            selectionMode={SelectionMode.multiple}
-                            getKey={this._getKey}
-                            setKey="multiple"
-                            layoutMode={DetailsListLayoutMode.justified}
-                            isHeaderVisible={true}
-                            selection={this._selection}
-                            selectionPreservedOnEmptyClick={true}
-                            onItemInvoked={this._onItemInvoked}
-                            enterModalSelectionOnTouch={true}
-                            ariaLabelForSelectionColumn="Toggle selection"
-                            ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-                            checkButtonAriaLabel="Row checkbox"
-                        />
-                    </MarqueeSelection>
+                    <DetailsList
+                        items={items}
+                        compact={isCompactMode}
+                        columns={columns}
+                        selectionMode={SelectionMode.multiple}
+                        getKey={this._getKey}
+                        setKey="multiple"
+                        layoutMode={DetailsListLayoutMode.justified}
+                        isHeaderVisible={true}
+                        selectionPreservedOnEmptyClick={true}
+                        onItemInvoked={this._onItemInvoked}
+                        enterModalSelectionOnTouch={true}
+                        ariaLabelForSelectionColumn="Toggle selection"
+                        ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+                        checkButtonAriaLabel="Row checkbox"
+                    />
                 ) : (
                     <DetailsList
                         items={items}
@@ -211,17 +177,6 @@ class DetailsListUI extends React.Component<
         return item.id || '';
     }
 
-    private _onChangeCompactMode = (ev: React.MouseEvent<HTMLElement>, checked?: boolean): void => {
-        this.setState({ isCompactMode: checked || false });
-    };
-
-    private _onChangeModalSelection = (
-        ev: React.MouseEvent<HTMLElement>,
-        checked?: boolean
-    ): void => {
-        this.setState({ isModalSelection: checked || false });
-    };
-
     private _onChangeText = (
         ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
         text?: string
@@ -237,22 +192,6 @@ class DetailsListUI extends React.Component<
 
     private _onItemInvoked(item: any): void {
         alert(`Item invoked: ${item.name}`);
-    }
-
-    private _getSelectionDetails(): string {
-        const selectionCount = this._selection.getSelectedCount();
-
-        switch (selectionCount) {
-            case 0:
-                return 'No items selected';
-            case 1:
-                return (
-                    '1 item selected: ' +
-                    (this._selection.getSelection()[0] as ITeamsMemberHydrated).name
-                );
-            default:
-                return `${selectionCount} items selected`;
-        }
     }
 
     private _onColumnClick = (ev: React.MouseEvent<HTMLElement>, column: IColumn): void => {

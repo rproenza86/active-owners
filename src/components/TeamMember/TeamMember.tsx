@@ -45,7 +45,7 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        if (teamMember) {
+        if (teamMember && teamMember.id) {
             setName(teamMember.name);
             setEmail(teamMember.email);
             setLocation(teamMember.location);
@@ -78,11 +78,11 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
                 const teamMemberObj: ITeamMemberCore = {
                     name,
                     email,
-                    location: location.split(' ')[2],
+                    location: location.split(' ')[2] || location, // Support for formats like "ATL 3003 L15404" and "L15404"
                     slackId,
                     teamId
                 };
-                if (teamMember) {
+                if (teamMember && teamMember.id) {
                     updateMember && updateMember(teamMember.id, teamMemberObj as ITeamMember);
                 } else {
                     addMember && addMember(teamMemberObj);
