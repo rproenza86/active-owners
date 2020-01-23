@@ -1,9 +1,13 @@
 @import '@material/react-layout-grid/index.scss';
 @import '@material/elevation/mdc-elevation';
+@import '../common/mixins';
 
-.login-container {
+.login-container,
+.login-container--animating {
     max-width: 500px;
     text-align: center;
+
+    @include animate-opacity-transition();
 
     .header {
         .mdc-card {

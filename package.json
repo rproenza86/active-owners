@@ -76,6 +76,7 @@
         "@fortawesome/fontawesome-svg-core": "^1.2.26",
         "@fortawesome/free-solid-svg-icons": "^5.12.0",
         "@fortawesome/react-fontawesome": "^0.1.8",
+        "@material/animation": "^4.0.0",
         "@material/elevation": "^4.0.0",
         "@material/react-button": "^0.15.0",
         "@material/react-card": "^0.15.0",

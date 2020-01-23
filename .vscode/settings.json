@@ -27,22 +27,22 @@
     "typescript.tsdk": "node_modules/typescript/lib",
     "nodeTdd.testScript": "ci-test",
     "workbench.colorCustomizations": {
-        // top bar
-        "titleBar.activeBackground": "#304FFE",
-        "titleBar.inactiveBackground": "#536DFE",
-        "titleBar.activeForeground": "#ffffff",
-        "titleBar.inactiveForeground": "#cccccc",
-        // terminal panel
         "panel.background": "#01579B",
-        "panel.border": "#82B1FF",
         "panelTitle.activeForeground": "#FFFF8D",
-        // panel with Explorer, Debugger ..
-        "activityBar.background": "#304FFE",
         "activityBar.activeForeground": "#ffffff",
-        "activityBar.inactiveForeground": "#ccccccd6",
-        // footer
-        "statusBar.background": "#304FFE",
-        "statusBar.foreground": "#ffffff",
-        "statusBarItem.hoverBackground": "#673AB7"
-    }
+        "activityBar.background": "#304ffe",
+        "activityBar.activeBorder": "#fe8093",
+        "activityBar.foreground": "#e7e7e7",
+        "activityBar.inactiveForeground": "#e7e7e799",
+        "activityBarBadge.background": "#fe8093",
+        "activityBarBadge.foreground": "#15202b",
+        "titleBar.activeBackground": "#0127fa",
+        "titleBar.inactiveBackground": "#0127fa99",
+        "titleBar.activeForeground": "#e7e7e7",
+        "titleBar.inactiveForeground": "#e7e7e799",
+        "statusBar.background": "#0127fa",
+        "statusBarItem.hoverBackground": "#304ffe",
+        "statusBar.foreground": "#e7e7e7"
+    },
+    "peacock.color": "#0127fa"
 }

@@ -1,15 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
+import { connect } from 'react-redux';
 import { Cell, Grid, Row } from '@material/react-layout-grid';
 import Card, { CardPrimaryContent } from '@material/react-card';
 import MaterialIcon from '@material/react-material-icon';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 
-import './Login.scss';
 import { requestLogin, receiveLogin, loginError, logoutUser } from '../../actions';
-import { connect } from 'react-redux';
 import firebase, { auth } from '../../firebase';
 import { Redirect } from 'react-router-dom';
+import { useAnimation } from '../common/hooks';
+
+import './Login.scss';
 
 export interface ILoginStateProps {
     isLoggingIn: boolean;
@@ -24,6 +26,9 @@ export interface ILoginDispatchProps {
 export type ILoginProps = ILoginStateProps & ILoginDispatchProps;
 
 const Login: React.FC<ILoginProps> = ({ handleLogin, isAuthenticated }) => {
+    // animation control
+    const [animate, setAnimate] = useAnimation();
+
     // Configure FirebaseUI.
     const config = {
         // Popup signin flow rather than redirect flow.
@@ -39,6 +44,7 @@ const Login: React.FC<ILoginProps> = ({ handleLogin, isAuthenticated }) => {
             // Called when the user has been successfully signed in.
             signInSuccessWithAuthResult: function(authResult: any, redirectUrl: string) {
                 if (authResult.user) {
+                    setAnimate(false);
                     handleLogin(authResult.user);
                 }
                 if (authResult.additionalUserInfo) {
@@ -74,7 +80,7 @@ const Login: React.FC<ILoginProps> = ({ handleLogin, isAuthenticated }) => {
         return <Redirect to="/" />;
     } else {
         return (
-            <Grid className="login-container">
+            <Grid className={`login-container${animate ? '--animating' : ''}`}>
                 <Row>
                     <Cell className="header" desktopColumns={12} phoneColumns={4} tabletColumns={8}>
                         <Card className="mdc-elevation--z16">
@@ -90,7 +96,7 @@ const Login: React.FC<ILoginProps> = ({ handleLogin, isAuthenticated }) => {
                 <Row className="body">
                     <Cell desktopColumns={12} phoneColumns={4} tabletColumns={8}>
                         <Card>
-                            <CardPrimaryContent className="mdc-elevation--z16">
+                            <CardPrimaryContent className="mdc-elevation--z8">
                                 <Grid>
                                     <Row>
                                         <Cell

@@ -36,10 +36,10 @@ const Main: React.FC<IMainProps> = ({ children, user }) => {
 
     return (
         <div className="drawer-container">
-            <TopAppBar>
-                <TopAppBarRow>
-                    <TopAppBarSection align="start">
-                        {user.email && (
+            {user.email && (
+                <TopAppBar>
+                    <TopAppBarRow>
+                        <TopAppBarSection align="start">
                             <TopAppBarIcon navIcon tabIndex={0}>
                                 <MaterialIcon
                                     hasRipple
@@ -48,18 +48,18 @@ const Main: React.FC<IMainProps> = ({ children, user }) => {
                                     ref={mainContentEl}
                                 />
                             </TopAppBarIcon>
-                        )}
-                        <TopAppBarTitle>Active Owner Registry</TopAppBarTitle>
-                    </TopAppBarSection>
-                    {user.email && (
+
+                            <TopAppBarTitle>Active Owner Registry</TopAppBarTitle>
+                        </TopAppBarSection>
+
                         <TopAppBarSection align="end" role="toolbar">
                             <TopAppBarIcon actionItem tabIndex={0}>
                                 <User displayName={user?.displayName} image={user?.photoURL} />
                             </TopAppBarIcon>
                         </TopAppBarSection>
-                    )}
-                </TopAppBarRow>
-            </TopAppBar>
+                    </TopAppBarRow>
+                </TopAppBar>
+            )}
             <TopAppBarFixedAdjust>
                 <Grid>{children}</Grid>
             </TopAppBarFixedAdjust>
