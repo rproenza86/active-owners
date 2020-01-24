@@ -1,0 +1,15 @@
+@import '@material/react-dialog/index.scss';
+@import '@material/react-text-field/index.scss';
+@import '@material/react-list/index.scss';
+@import '@material/react-menu-surface/index.scss';
+@import '@material/react-menu/index.scss';
+@import '@material/react-select/index.scss';
+@import '../common/mixins.scss';
+
+.mdc-dialog .mdc-dialog__scrim {
+    @include blurred-backdrop;
+}
+
+.team {
+    min-width: 400px;
+}

@@ -39,7 +39,7 @@ export const getTeamsMemberHydrated = (
                 team = teams[key];
             }
         }
-        const { location: teamLocation, logo, name: teamName, acId } = team;
+        const { location: teamLocation, logo = '', name: teamName, acId } = team;
 
         const teamsMemberHydrated = {
             ...member,

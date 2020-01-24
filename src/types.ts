@@ -40,9 +40,8 @@ export interface ITeamMember extends ITeamMemberCore {
 export interface ITeamsMembersState extends Array<ITeamsMemberHydrated> {}
 
 export interface ITeamsObject {
-    teamId: string;
     location: string;
-    logo: string;
+    logo?: string;
     name: string;
     acId?: string;
     activeOwnerName?: string;

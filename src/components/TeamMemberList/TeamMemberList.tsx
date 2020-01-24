@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { connect } from 'react-redux';
 import { IStateTree, ITeamMember } from '../../types';
@@ -10,36 +10,32 @@ import IconButton from '@material/react-icon-button';
 import DetailsListUI, { IDetailsListDocumentsProps, classNames } from '../DetailsList/DetailsList';
 import TeamMember from '../TeamMember/TeamMember';
 import { deleteTeamMember } from '../../actions/teamMembers';
-import showConfirm, { IConfirmConfig } from '../../utils/confirm';
+import { useDocumentCU } from '../common/hooks';
+import { createUpdateClickHandlers } from '../common/createUpdateClickHandlers';
 
 interface ITeamMemberList {
     teamsMembers: ITeamsMemberHydrated[];
 }
 
 export interface ITeamMemberListDispatchProps {
-    deleteMember?: (teamMember: ITeamMember) => any;
+    deleteMember: (teamMember: ITeamMember) => any;
 }
 
 export type ITeamMemberListProps = ITeamMemberList & ITeamMemberListDispatchProps;
 
 const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers, deleteMember }) => {
-    const [teamMember, setTeamMember] = useState({} as ITeamsMemberHydrated);
-    const [addOrEditTeamMember, setAddOrEditTeamMember] = useState(false);
+    const [
+        [teamMember, setTeamMember],
+        [addOrEditTeamMember, setAddOrEditTeamMember]
+    ] = useDocumentCU<ITeamsMemberHydrated>();
 
-    const _onEditClick = (item: ITeamsMemberHydrated): void => {
-        setTeamMember(item);
-        setAddOrEditTeamMember(!addOrEditTeamMember);
-    };
-
-    const _onDeleteClick = (item: ITeamsMemberHydrated): void => {
-        const deleteConfirmConfig: IConfirmConfig = {
-            title: 'Confirm Deletion!',
-            content: "Do you want to delete these Team's Member?",
-            onOkCallback: () => deleteMember && deleteMember(item)
-        };
-
-        showConfirm(deleteConfirmConfig);
-    };
+    const { _onEditClick, _onDeleteClick } = createUpdateClickHandlers<ITeamsMemberHydrated>(
+        [
+            [teamMember, setTeamMember],
+            [addOrEditTeamMember, setAddOrEditTeamMember]
+        ],
+        deleteMember
+    );
 
     const config: IDetailsListDocumentsProps<ITeamsMemberHydrated[]> = {
         items: teamsMembers,

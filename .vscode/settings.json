@@ -25,7 +25,7 @@
     "tslint.configFile": "./tslint.json",
     "workbench.iconTheme": "vscode-icons",
     "typescript.tsdk": "node_modules/typescript/lib",
-    "nodeTdd.testScript": "ci-test",
+    "nodeTdd.testScript": "test:ci",
     "workbench.colorCustomizations": {
         "panel.background": "#01579B",
         "panelTitle.activeForeground": "#FFFF8D",

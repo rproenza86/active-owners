@@ -23,6 +23,7 @@ import List, {
 import Menu from '../Menu/Menu';
 import UpdateTeamAC from '../UpdateTeamAC/UpdateTeamAC';
 import TeamMember from '../TeamMember/TeamMember';
+import Team from '../Team/Team';
 
 import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
@@ -38,6 +39,7 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
     const [openUpdateTeamAC, setOpenUpdateTeamAC] = useState(false);
     const [coordinates, setCoordinates] = useState(undefined);
     const [addTeamMember, setAddTeamMember] = useState(false);
+    const [addTeam, setAddTeam] = useState(false);
 
     const rightClickCallback = (event: any) => {
         setOpenMenu(!openMenu);
@@ -54,8 +56,8 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
         console.log(`Menu option "${optionName}" clicked`);
     const menuOptions = [
         {
-            optionName: 'Team Members',
-            optionCallBack: dummyOptionCallBack
+            optionName: 'Add Team',
+            optionCallBack: () => setAddTeam(!addTeam)
         },
         {
             optionName: 'Add Member',
@@ -83,6 +85,13 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
                 teamIdP={activeOwner.teamId}
                 onCloseUpdateHandler={() => {
                     setAddTeamMember(!addTeamMember);
+                }}
+            />
+            <Team
+                isOpen={addTeam}
+                acIdP={activeOwner.id}
+                onCloseUpdateHandler={() => {
+                    setAddTeam(!addTeam);
                 }}
             />
             <Card className="mdc-card active-owner-card">

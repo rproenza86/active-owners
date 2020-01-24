@@ -12,64 +12,55 @@ import TextField, { HelperText, Input } from '@material/react-text-field';
 import { Button } from '@material/react-button';
 import { Tag } from 'antd';
 
-import { addTeamMember, updateTeamMember } from '../../actions/teamMembers';
-import { IStateTree, ITeam, ITeamMemberCore, ITeamMember } from '../../types';
+import { addTeam, updateTeam } from '../../actions/teams';
+import { IStateTree, ITeam, ITeamsObject } from '../../types';
 import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
-import './TeamMember.scss';
+import './Team.scss';
 
-interface IUpdateTeamACProps {
+interface ITeamProps {
     isOpen: boolean;
     onCloseUpdateHandler: (keepOpen?: boolean) => void;
-    teams?: ITeam[];
-    teamIdP?: string;
-    addMember?: (teamMember: ITeamMemberCore) => any;
-    updateMember?: (teamMemberId: string, teamMember: ITeamMember) => any;
-    teamMember?: ITeamsMemberHydrated;
+    teamsMembers?: ITeamsMemberHydrated[];
+    addTeam?: (team: ITeamsObject) => any;
+    updateTeam?: (team: ITeam) => any;
+    team?: ITeam;
+    acIdP?: string;
 }
 
-const TeamMember: React.FC<IUpdateTeamACProps> = ({
+const Team: React.FC<ITeamProps> = ({
+    addTeam,
     isOpen,
-    teams,
-    teamIdP,
-    addMember,
     onCloseUpdateHandler,
-    teamMember,
-    updateMember
+    team,
+    teamsMembers,
+    updateTeam,
+    acIdP
 }) => {
     const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
     const [location, setLocation] = useState('');
-    const [slackId, setLackId] = useState('');
-    const [teamId, setTeamId] = useState(teamIdP || (teams ? teams[0].id : ''));
+    const [acId, setAcId] = useState(acIdP || (teamsMembers ? teamsMembers[0].id : ''));
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        if (teamMember && teamMember.id) {
-            setName(teamMember.name);
-            setEmail(teamMember.email);
-            setLocation(teamMember.location);
-            setLackId(teamMember.slackId);
-            setTeamId(teamMember.teamId);
+        if (team && team.id) {
+            setName(team.name);
+            setAcId(team.acId || '');
+            setLocation(team.location);
         } else {
             setName('');
-            setEmail('');
             setLocation('');
-            setLackId('');
         }
-    }, [teamMember]);
+    }, [team]);
 
     const isValidForm = (): boolean => {
         if (name === '') {
             return false;
         }
-        if (email === '') {
-            return false;
-        }
         if (location === '') {
             return false;
         }
-        if (slackId === '') {
+        if (acId === '') {
             return false;
         }
         return true;
@@ -80,17 +71,15 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
             if (!isValidForm()) {
                 setErrorMessage('Missing required information. Please, complete form.');
             } else {
-                const teamMemberObj: ITeamMemberCore = {
+                const teamObj: ITeamsObject = {
                     name,
-                    email,
-                    location: location.split(' ')[2] || location, // Support for formats like "ATL 3003 L15404" and "L15404"
-                    slackId,
-                    teamId
+                    location,
+                    acId
                 };
-                if (teamMember && teamMember.id) {
-                    updateMember && updateMember(teamMember.id, teamMemberObj as ITeamMember);
+                if (team && team.id) {
+                    updateTeam && updateTeam({ ...team, ...teamObj });
                 } else {
-                    addMember && addMember(teamMemberObj);
+                    addTeam && addTeam(teamObj);
                 }
                 return onCloseUpdateHandler(true);
             }
@@ -100,10 +89,10 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
     };
 
     const getDialogTitle = () => {
-        if (teamMember && teamMember.id) {
-            return 'Update Team Member';
+        if (team && team.id) {
+            return 'Update Team';
         } else {
-            return 'Add a Team Member';
+            return 'Add New  Team';
         }
     };
 
@@ -125,31 +114,6 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
                                 onChange={(e: any) => setName(e.currentTarget.value)}
                             />
                         </TextField>
-
-                        <TextField
-                            label="Slack ID"
-                            helperText={<HelperText>Enter your Slack user ID!</HelperText>}
-                            onTrailingIconSelect={() => setLackId('')}
-                            trailingIcon={<MaterialIcon role="button" icon="perm_identity" />}
-                        >
-                            <Input
-                                value={slackId}
-                                required
-                                onChange={(e: any) => setLackId(e.currentTarget.value)}
-                            />
-                        </TextField>
-                        <TextField
-                            label="eMail"
-                            helperText={<HelperText>Enter your eMail address!</HelperText>}
-                            onTrailingIconSelect={() => setEmail('')}
-                            trailingIcon={<MaterialIcon role="button" icon="email" />}
-                        >
-                            <Input
-                                required
-                                value={email}
-                                onChange={(e: any) => setEmail(e.currentTarget.value)}
-                            />
-                        </TextField>
                         <TextField
                             label="Location"
                             helperText={<HelperText>Enter your desk location!</HelperText>}
@@ -163,14 +127,14 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
                             />
                         </TextField>
                         <Select
-                            label="Choose Team"
+                            label="Choose Active Owner"
                             required
-                            value={teamId}
-                            onChange={(evt: any) => setTeamId(evt.target.value)}
+                            value={acId}
+                            onChange={(evt: any) => setAcId(evt.target.value)}
                         >
-                            {teams?.map(team => (
-                                <Option value={team.id} key={team.id}>
-                                    {team.name}
+                            {teamsMembers?.map(teamMember => (
+                                <Option value={teamMember.id} key={teamMember.id}>
+                                    {teamMember.name}
                                 </Option>
                             ))}
                         </Select>
@@ -201,16 +165,15 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
     );
 };
 
-const mapStateToProps = (state: IStateTree, props: IUpdateTeamACProps): IUpdateTeamACProps => {
-    return { ...props, teams: state.teams };
+const mapStateToProps = (state: IStateTree, props: ITeamProps): ITeamProps => {
+    return { ...props, teamsMembers: state.teamsMembers };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        addMember: (teamMember: ITeamMemberCore) => dispatch(addTeamMember(teamMember)),
-        updateMember: (teamMemberId: string, teamMember: ITeamMember) =>
-            dispatch(updateTeamMember(teamMemberId, teamMember))
+        addTeam: (team: ITeamsObject) => dispatch(addTeam(team)),
+        updateTeam: (team: ITeam) => dispatch(updateTeam(team))
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(TeamMember);
+export default connect(mapStateToProps, mapDispatchToProps)(Team);

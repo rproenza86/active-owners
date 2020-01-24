@@ -1,22 +1,37 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserNinja } from '@fortawesome/free-solid-svg-icons';
 import { Breadcrumb, Icon } from 'antd';
 import MaterialIcon from '@material/react-material-icon';
+import IconButton from '@material/react-icon-button';
 
-import { ITeam, IStateTree, IDocument } from '../../types';
+import { ITeam, IStateTree } from '../../types';
 import DetailsListUI, { IDetailsListDocumentsProps, classNames } from '../DetailsList/DetailsList';
+import { deleteTeam } from '../../actions/teams';
+import { useDocumentCU } from '../common/hooks';
+import { createUpdateClickHandlers } from '../common/createUpdateClickHandlers';
+import Team from '../Team/Team';
 
 interface ITeamList {
     teams: ITeam[];
 }
 
-export interface ITeamListDispatchProps {}
+export interface ITeamListDispatchProps {
+    deleteTeam: (team: ITeam) => any;
+}
 
 export type ITeamListProps = ITeamList & ITeamListDispatchProps;
 
-const TeamList: React.FC<ITeamListProps> = ({ teams }) => {
+const TeamList: React.FC<ITeamListProps> = ({ teams, deleteTeam }) => {
+    const [[team, setTeam], [addOrEditTeam, setAddOrEditTeam]] = useDocumentCU<ITeam>();
+
+    const { _onEditClick, _onDeleteClick } = createUpdateClickHandlers<ITeam>(
+        [
+            [team, setTeam],
+            [addOrEditTeam, setAddOrEditTeam]
+        ],
+        deleteTeam
+    );
+
     const config: IDetailsListDocumentsProps<ITeam[]> = {
         items: teams,
         columns: [
@@ -29,10 +44,19 @@ const TeamList: React.FC<ITeamListProps> = ({ teams }) => {
                 iconName: 'Engineers',
                 isIconOnly: true,
                 fieldName: 'name',
-                minWidth: 16,
-                maxWidth: 40,
-                onRender: (item: IDocument) => {
-                    return <FontAwesomeIcon icon={faUserNinja} />;
+                minWidth: 100,
+                maxWidth: 110,
+                onRender: (item: ITeam) => {
+                    return (
+                        <>
+                            <IconButton onClick={() => _onEditClick(item)}>
+                                <MaterialIcon icon="edit" />
+                            </IconButton>
+                            <IconButton onClick={() => _onDeleteClick(item)}>
+                                <MaterialIcon icon="delete_forever" />
+                            </IconButton>
+                        </>
+                    );
                 }
             },
             {
@@ -95,7 +119,26 @@ const TeamList: React.FC<ITeamListProps> = ({ teams }) => {
                 </Breadcrumb.Item>
             </Breadcrumb>
 
-            <DetailsListUI items={config.items} columns={config.columns} />
+            <DetailsListUI
+                items={config.items}
+                columns={config.columns}
+                withAddBtn
+                createButtonConfig={{
+                    text: 'Add New Team',
+                    onClickHandler: () => {
+                        _onEditClick({} as ITeam);
+                    }
+                }}
+            />
+
+            <Team
+                isOpen={addOrEditTeam}
+                acIdP={team.acId}
+                team={team}
+                onCloseUpdateHandler={() => {
+                    setAddOrEditTeam(!addOrEditTeam);
+                }}
+            />
         </>
     );
 };
@@ -105,7 +148,9 @@ const mapStateToProps = (state: IStateTree): ITeamList => {
 };
 
 const mapDispatchToProps = (dispatch: any) => {
-    return {};
+    return {
+        deleteTeam: (team: ITeam) => dispatch(deleteTeam(team))
+    };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TeamList);
