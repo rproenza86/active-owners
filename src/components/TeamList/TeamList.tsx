@@ -49,10 +49,16 @@ const TeamList: React.FC<ITeamListProps> = ({ teams, deleteTeam }) => {
                 onRender: (item: ITeam) => {
                     return (
                         <>
-                            <IconButton onClick={() => _onEditClick(item)}>
+                            <IconButton
+                                className="edit-list-elm"
+                                onClick={() => _onEditClick(item)}
+                            >
                                 <MaterialIcon icon="edit" />
                             </IconButton>
-                            <IconButton onClick={() => _onDeleteClick(item)}>
+                            <IconButton
+                                className="delete-list-elm"
+                                onClick={() => _onDeleteClick(item)}
+                            >
                                 <MaterialIcon icon="delete_forever" />
                             </IconButton>
                         </>
