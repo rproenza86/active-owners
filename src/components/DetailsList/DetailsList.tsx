@@ -121,6 +121,13 @@ class DetailsListUI extends React.Component<
         this.setState({ items: this._allItems });
     }
 
+    componentDidUpdate(prevProps: IDetailsListDocumentsProps<DetailsListUIConfigType>) {
+        if (JSON.stringify(this.props.items) !== JSON.stringify(prevProps.items)) {
+            this._allItems = this.props.items;
+            this.setState({ items: this._allItems });
+        }
+    }
+
     public render() {
         const { withAddBtn, createButtonConfig } = this.props;
         const { columns, isCompactMode, items, isModalSelection, announcedMessage } = this.state;
@@ -134,7 +141,9 @@ class DetailsListUI extends React.Component<
                         styles={controlStyles}
                     />
 
-                    {withAddBtn && createButtonConfig && <CreateButton config={createButtonConfig} />}
+                    {withAddBtn && createButtonConfig && (
+                        <CreateButton config={createButtonConfig} />
+                    )}
 
                     <Announced message={`Number of items after filter applied: ${items.length}.`} />
                 </div>
