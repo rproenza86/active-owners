@@ -15,6 +15,7 @@ export interface ITeamsMemberHydrated extends ITeamMember {
     logo: string;
     teamName: string;
     isActiveOwner: boolean;
+    teamImageUrl: string;
 }
 
 interface GetACListSuccessAction extends FSA<typeof GET_AC_LIST_SUCCESS, ITeamsMemberHydrated[]> {}
@@ -46,7 +47,8 @@ export const getTeamsMemberHydrated = (
             logo,
             location: `${teamLocation} ${member.location}`,
             teamName,
-            isActiveOwner: acId === member.id ? true : false
+            isActiveOwner: acId === member.id ? true : false,
+            teamImageUrl: team.imageUrl || ''
         };
 
         return teamsMemberHydrated;

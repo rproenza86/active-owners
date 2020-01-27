@@ -69,7 +69,7 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
         }
     ];
 
-    const image =
+    const fallBackImage =
         'https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/2.jpg';
     return (
         <>
@@ -96,7 +96,11 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
             />
             <Card className="mdc-card active-owner-card">
                 <CardPrimaryContent className="active-owner-card__primary-action">
-                    <CardMedia wide imageUrl={image} className="active-owner-card__media" />
+                    <CardMedia
+                        wide
+                        imageUrl={activeOwner.teamImageUrl || fallBackImage}
+                        className="active-owner-card__media"
+                    />
                     <div className="active-owner-card__primary">
                         <Headline6 className="active-owner-card__title">
                             {activeOwner.teamName}

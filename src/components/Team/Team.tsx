@@ -17,6 +17,7 @@ import { IStateTree, ITeam, ITeamsObject } from '../../types';
 import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
 import './Team.scss';
+import ImageUploads from './ImageUploads';
 
 interface ITeamProps {
     isOpen: boolean;
@@ -39,6 +40,8 @@ const Team: React.FC<ITeamProps> = ({
 }) => {
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
+    const [image, setImage] = useState(team?.image || '');
+    const [imageUrl, setImageUrl] = useState(team?.imageUrl || '');
     const [acId, setAcId] = useState(acIdP || (teamsMembers ? teamsMembers[0].id : ''));
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -46,12 +49,20 @@ const Team: React.FC<ITeamProps> = ({
         if (team && team.id) {
             setName(team.name);
             setAcId(team.acId || '');
+            setImage(team.image || '');
+            setImageUrl(team.imageUrl || '');
             setLocation(team.location);
         } else {
-            setName('');
-            setLocation('');
+            resetFields();
         }
     }, [team]);
+
+    const resetFields = () => {
+        setName('');
+        setLocation('');
+        setImage('');
+        setImageUrl('');
+    };
 
     const isValidForm = (): boolean => {
         if (name === '') {
@@ -74,14 +85,16 @@ const Team: React.FC<ITeamProps> = ({
                 const teamObj: ITeamsObject = {
                     name,
                     location,
-                    acId
+                    acId,
+                    image,
+                    imageUrl
                 };
                 if (team && team.id) {
                     updateTeam && updateTeam({ ...team, ...teamObj });
                 } else {
                     addTeam && addTeam(teamObj);
                 }
-                return onCloseUpdateHandler(true);
+                onCloseUpdateHandler(true);
             }
         } else {
             onCloseUpdateHandler();
@@ -138,6 +151,14 @@ const Team: React.FC<ITeamProps> = ({
                                 </Option>
                             ))}
                         </Select>
+
+                        <ImageUploads
+                            onImageSave={(imageName: string, imageUrl: string) => {
+                                setImage(imageName);
+                                setImageUrl(imageUrl);
+                            }}
+                            name={image}
+                        />
 
                         {errorMessage && (
                             <div>

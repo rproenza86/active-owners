@@ -143,6 +143,7 @@ const TeamList: React.FC<ITeamListProps> = ({ teams, deleteTeam }) => {
                 team={team}
                 onCloseUpdateHandler={() => {
                     setAddOrEditTeam(!addOrEditTeam);
+                    setTeam({} as any);
                 }}
             />
         </>

@@ -1,0 +1,12 @@
+/* tile uploaded pictures */
+
+.aw-image-loader {
+    width: 100%;
+
+    .ant-upload.ant-upload-select.ant-upload-select-picture {
+        width: 100%;
+        .ant-progress-text {
+          text-align: right;
+        }
+    }
+}
