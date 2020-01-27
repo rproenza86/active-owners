@@ -7,13 +7,21 @@
 
 .active-owner-card__primary,
 .active-owner-card__secondary {
-    padding: 1rem;
-
     h6 {
         margin: 10px 0;
+    }
+    .contact-label {
+        text-align: left;
+        padding: 0 16px;
     }
 }
 
 .active-owner-card {
     margin-bottom: 10px;
+
+    .ant-avatar-image {
+        position: relative;
+        top: -13px;
+        left: 45%;
+    }
 }

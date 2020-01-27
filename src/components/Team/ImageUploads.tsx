@@ -28,6 +28,7 @@ interface IImageFile {
 
 interface IImageUploadsProps extends IImageFile {
     onImageSave: (imageName: string, imageUrl: string) => void;
+    label: string;
 }
 
 interface IImageUploadsState {
@@ -248,7 +249,7 @@ class ImageUploads extends React.Component<IImageUploadsProps, IImageUploadsStat
                     fileList={fileList}
                 >
                     <Button disabled={fileList.length === 1} loading={uploading}>
-                        <Icon type="upload" /> Select Team Image
+                        <Icon type="upload" /> {this.props.label}
                     </Button>
                     {!!progress && <Progress percent={progress} status={progressStatus} />}
                 </Upload>

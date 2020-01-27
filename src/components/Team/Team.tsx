@@ -42,6 +42,8 @@ const Team: React.FC<ITeamProps> = ({
     const [location, setLocation] = useState('');
     const [image, setImage] = useState(team?.image || '');
     const [imageUrl, setImageUrl] = useState(team?.imageUrl || '');
+    const [logo, setLogo] = useState(team?.logo || '');
+    const [logoUrl, setLogoUrl] = useState(team?.logoUrl || '');
     const [acId, setAcId] = useState(acIdP || (teamsMembers ? teamsMembers[0].id : ''));
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -52,6 +54,8 @@ const Team: React.FC<ITeamProps> = ({
             setImage(team.image || '');
             setImageUrl(team.imageUrl || '');
             setLocation(team.location);
+            setLogo(team.logo || '');
+            setLogoUrl(team.logoUrl || '');
         } else {
             resetFields();
         }
@@ -62,6 +66,8 @@ const Team: React.FC<ITeamProps> = ({
         setLocation('');
         setImage('');
         setImageUrl('');
+        setLogo('');
+        setLogoUrl('');
     };
 
     const isValidForm = (): boolean => {
@@ -87,7 +93,9 @@ const Team: React.FC<ITeamProps> = ({
                     location,
                     acId,
                     image,
-                    imageUrl
+                    imageUrl,
+                    logo,
+                    logoUrl
                 };
                 if (team && team.id) {
                     updateTeam && updateTeam({ ...team, ...teamObj });
@@ -158,6 +166,16 @@ const Team: React.FC<ITeamProps> = ({
                                 setImageUrl(imageUrl);
                             }}
                             name={image}
+                            label="Select Team Image"
+                        />
+
+                        <ImageUploads
+                            onImageSave={(logoName: string, logoUrl: string) => {
+                                setLogo(logoName);
+                                setLogoUrl(logoUrl);
+                            }}
+                            name={logo}
+                            label="Select Team Logo"
                         />
 
                         {errorMessage && (

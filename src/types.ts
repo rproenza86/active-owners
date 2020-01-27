@@ -42,6 +42,7 @@ export interface ITeamsMembersState extends Array<ITeamsMemberHydrated> {}
 export interface ITeamsObject {
     location: string;
     logo?: string;
+    logoUrl?: string;
     image?: string;
     imageUrl?: string;
     name: string;

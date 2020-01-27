@@ -19,6 +19,7 @@ import List, {
     ListItemGraphic,
     ListItemMeta
 } from '@material/react-list';
+import { Avatar } from 'antd';
 
 import Menu from '../Menu/Menu';
 import UpdateTeamAC from '../UpdateTeamAC/UpdateTeamAC';
@@ -71,6 +72,8 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
 
     const fallBackImage =
         'https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/2.jpg';
+    const fallbackLogo = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
+
     return (
         <>
             <UpdateTeamAC
@@ -101,6 +104,10 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
                         imageUrl={activeOwner.teamImageUrl || fallBackImage}
                         className="active-owner-card__media"
                     />
+                    <Avatar
+                        className="mdc-elevation--z4"
+                        src={activeOwner.teamLogoUrl || fallbackLogo}
+                    />
                     <div className="active-owner-card__primary">
                         <Headline6 className="active-owner-card__title">
                             {activeOwner.teamName}
@@ -110,9 +117,7 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
                         </Subtitle2>
                     </div>
                     <Body2 tag="div" className="active-owner-card__secondary">
-                        <Subtitle2 className="active-owner-card__subtitle">
-                            {activeOwner.name} Contact Info:
-                        </Subtitle2>
+                        <Subtitle2 className="active-owner-card__subtitle contact-label">Contact Info:</Subtitle2>
 
                         <ListGroup>
                             <ListDivider tag="div" />
