@@ -1,11 +1,18 @@
 import { Dispatch } from 'redux';
 
-import { FSA, ActionCreator, ITeam, ITeamMember } from '../types';
+import { FSA, ActionCreator, ITeam, ITeamMember, IUserSubscription } from '../types';
 import { getTeamsListSuccess } from './teams';
-import { getTeams, updateTeam } from '../services/teams';
+import {
+    getTeams,
+    updateTeam,
+    notifyUserOnAOUpdatesBy,
+    getUserSubscriptions
+} from '../services/teams';
 import { getTeamsMembers } from '../services/teamsMembers';
 import { sortList } from '../utils/sort';
 import { notifyEvent } from '../utils/notification';
+import { messaging } from '../services/cloudMessaging';
+import { unsubscribeToAONotification } from '../services/commonDbOps';
 
 export const GET_AC_LIST = 'GET_AC_LIST';
 export const GET_AC_LIST_SUCCESS = 'GET_AC_LIST_SUCCESS';
@@ -17,6 +24,7 @@ export interface ITeamsMemberHydrated extends ITeamMember {
     isActiveOwner: boolean;
     teamImageUrl: string;
     teamLogoUrl: string;
+    isNotificationSubscriber: boolean;
 }
 
 interface GetACListSuccessAction extends FSA<typeof GET_AC_LIST_SUCCESS, ITeamsMemberHydrated[]> {}
@@ -32,16 +40,22 @@ const getACListSuccess: ActionCreator<GetACListSuccessAction> = (
 
 export const getTeamsMemberHydrated = (
     teamsMembers: ITeamMember[],
-    teams: ITeam[]
+    teams: ITeam[],
+    subscriptions: IUserSubscription[]
 ): ITeamsMemberHydrated[] =>
     teamsMembers.map((member: ITeamMember) => {
         let team: ITeam = {} as ITeam;
         for (const key in teams) {
             if (teams[key].id === member.teamId) {
                 team = teams[key];
+                break;
             }
         }
-        const { location: teamLocation, logo = '', name: teamName, acId } = team;
+        const { location: teamLocation, logo = '', name: teamName, acId, id } = team;
+
+        // debugger;
+        const isNotificationSubscriber =
+            subscriptions.findIndex(subscription => subscription.teamId === id) >= 0;
 
         const teamsMemberHydrated = {
             ...member,
@@ -50,7 +64,8 @@ export const getTeamsMemberHydrated = (
             teamName,
             isActiveOwner: acId === member.id ? true : false,
             teamImageUrl: team.imageUrl || '',
-            teamLogoUrl: team.logoUrl || ''
+            teamLogoUrl: team.logoUrl || '',
+            isNotificationSubscriber
         };
 
         return teamsMemberHydrated;
@@ -70,14 +85,17 @@ export const hydrateTeams = (teamsMembers: ITeamMember[], teamsP: ITeam[]): ITea
     return teams;
 };
 
-export const getACList = () => async (dispatch: Dispatch) => {
+export const getACList = (uid: string) => async (dispatch: Dispatch) => {
     try {
+        // TODO: For performance, refactor to PromiseAll solution
         const teams = await getTeams();
         const teamsMembers = await getTeamsMembers();
+        const subscriptions = await getUserSubscriptions(uid, teams);
 
         const teamsMemberHydrated: ITeamsMemberHydrated[] = getTeamsMemberHydrated(
             teamsMembers,
-            teams
+            teams,
+            subscriptions
         );
         const teamsMemberHydratedSorted = sortList(
             teamsMemberHydrated,
@@ -93,7 +111,9 @@ export const getACList = () => async (dispatch: Dispatch) => {
     }
 };
 
-export const updateTeamAO = (teamId: string, aoId: string) => async (dispatch: any) => {
+export const updateTeamAO = (teamId: string, aoId: string, uid: string) => async (
+    dispatch: any
+) => {
     try {
         const result = await updateTeam(teamId, { acId: aoId });
         if (result.ok) {
@@ -103,7 +123,7 @@ export const updateTeamAO = (teamId: string, aoId: string) => async (dispatch: a
                 description: 'The Team Active Owner was successfully updated '
             });
 
-            dispatch(getACList());
+            dispatch(getACList(uid));
         }
     } catch (error) {
         notifyEvent({
@@ -114,5 +134,65 @@ export const updateTeamAO = (teamId: string, aoId: string) => async (dispatch: a
         });
 
         console.log(`Error updating team ${teamId}`, error);
+    }
+};
+
+export const subscribeToTeamNotifications = (
+    activeOwner: ITeamsMemberHydrated,
+    pushNotificationSubscription: string,
+    user: firebase.User
+) => async (dispatch: any) => {
+    try {
+        const cloudMessagingToken = await messaging.getToken();
+        const subscription: IUserSubscription = {
+            uid: user.uid,
+            name: user.displayName || '',
+            email: user.email || '',
+            cloudMessagingToken,
+            pushNotificationSubscription,
+            teamId: activeOwner.teamId
+        };
+        const result = await notifyUserOnAOUpdatesBy(activeOwner.teamId, subscription);
+        if (result.ok) {
+            notifyEvent({
+                type: 'success',
+                message: `Team ${activeOwner.teamName} Notification`,
+                description:
+                    'You have been successfully subscribed. You will be notified each time the Active Owner change.'
+            });
+        }
+    } catch (error) {
+        notifyEvent({
+            type: 'error',
+            message: `Team ${activeOwner.teamName} Notification`,
+            description: 'An error happened while attempting to subscribe you. Subscription failed.'
+        });
+
+        console.error(error);
+    }
+};
+
+export const unSubscribeToTeamNotifications = (teamId: string, uid: string) => async (
+    dispatch: any
+) => {
+    try {
+        const result = await unsubscribeToAONotification(uid, teamId);
+        if (result.ok) {
+            notifyEvent({
+                type: 'success',
+                message: `Team Notification`,
+                description:
+                    'You have been successfully unsubscribed. You will not be notified about Team Active Owner changes.'
+            });
+        }
+    } catch (error) {
+        notifyEvent({
+            type: 'error',
+            message: `Team Notification`,
+            description:
+                'An error happened while attempting to unsubscribe you. Un-subscription failed.'
+        });
+
+        console.error(error);
     }
 };

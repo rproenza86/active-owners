@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import Dialog, {
     DialogTitle,
@@ -18,13 +18,14 @@ import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
 import './Team.scss';
 import ImageUploads from './ImageUploads';
+import { UserContext } from '../App/App';
 
 interface ITeamProps {
     isOpen: boolean;
     onCloseUpdateHandler: (keepOpen?: boolean) => void;
     teamsMembers?: ITeamsMemberHydrated[];
-    addTeam?: (team: ITeamsObject) => any;
-    updateTeam?: (team: ITeam) => any;
+    addTeam?: (team: ITeamsObject, uid: string) => void;
+    updateTeam?: (team: ITeam, uid: string) => void;
     team?: ITeam;
     acIdP?: string;
 }
@@ -83,6 +84,8 @@ const Team: React.FC<ITeamProps> = ({
         return true;
     };
 
+    const user = useContext(UserContext);
+
     const onCloseHandler = (action: string) => {
         if (action === 'confirm') {
             if (!isValidForm()) {
@@ -98,9 +101,9 @@ const Team: React.FC<ITeamProps> = ({
                     logoUrl
                 };
                 if (team && team.id) {
-                    updateTeam && updateTeam({ ...team, ...teamObj });
+                    updateTeam && updateTeam({ ...team, ...teamObj }, user.uid);
                 } else {
-                    addTeam && addTeam(teamObj);
+                    addTeam && addTeam(teamObj, user.uid);
                 }
                 onCloseUpdateHandler(true);
             }
@@ -210,8 +213,8 @@ const mapStateToProps = (state: IStateTree, props: ITeamProps): ITeamProps => {
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        addTeam: (team: ITeamsObject) => dispatch(addTeam(team)),
-        updateTeam: (team: ITeam) => dispatch(updateTeam(team))
+        addTeam: (team: ITeamsObject, uid: string) => dispatch(addTeam(team, uid)),
+        updateTeam: (team: ITeam, uid: string) => dispatch(updateTeam(team, uid))
     };
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { connect } from 'react-redux';
 import Dialog, {
     DialogTitle,
@@ -17,14 +17,15 @@ import { IStateTree, ITeam, ITeamMemberCore, ITeamMember } from '../../types';
 import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
 import './TeamMember.scss';
+import { UserContext } from '../App/App';
 
 interface IUpdateTeamACProps {
     isOpen: boolean;
     onCloseUpdateHandler: (keepOpen?: boolean) => void;
     teams?: ITeam[];
     teamIdP?: string;
-    addMember?: (teamMember: ITeamMemberCore) => any;
-    updateMember?: (teamMemberId: string, teamMember: ITeamMember) => any;
+    addMember?: (teamMember: ITeamMemberCore, uid: string) => any;
+    updateMember?: (teamMemberId: string, teamMember: ITeamMember, uid: string) => any;
     teamMember?: ITeamsMemberHydrated;
 }
 
@@ -75,6 +76,8 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
         return true;
     };
 
+    const user = useContext(UserContext);
+
     const onCloseHandler = (action: string) => {
         if (action === 'confirm') {
             if (!isValidForm()) {
@@ -88,9 +91,10 @@ const TeamMember: React.FC<IUpdateTeamACProps> = ({
                     teamId
                 };
                 if (teamMember && teamMember.id) {
-                    updateMember && updateMember(teamMember.id, teamMemberObj as ITeamMember);
+                    updateMember &&
+                        updateMember(teamMember.id, teamMemberObj as ITeamMember, user.uid);
                 } else {
-                    addMember && addMember(teamMemberObj);
+                    addMember && addMember(teamMemberObj, user.uid);
                 }
                 return onCloseUpdateHandler(true);
             }
@@ -207,9 +211,10 @@ const mapStateToProps = (state: IStateTree, props: IUpdateTeamACProps): IUpdateT
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        addMember: (teamMember: ITeamMemberCore) => dispatch(addTeamMember(teamMember)),
-        updateMember: (teamMemberId: string, teamMember: ITeamMember) =>
-            dispatch(updateTeamMember(teamMemberId, teamMember))
+        addMember: (teamMember: ITeamMemberCore, uid: string) =>
+            dispatch(addTeamMember(teamMember, uid)),
+        updateMember: (teamMemberId: string, teamMember: ITeamMember, uid: string) =>
+            dispatch(updateTeamMember(teamMemberId, teamMember, uid))
     };
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { connect } from 'react-redux';
 import { Breadcrumb, Icon } from 'antd';
 import MaterialIcon from '@material/react-material-icon';
@@ -10,13 +10,14 @@ import { deleteTeam } from '../../actions/teams';
 import { useDocumentCU } from '../common/hooks';
 import { createUpdateClickHandlers } from '../common/createUpdateClickHandlers';
 import Team from '../Team/Team';
+import { UserContext } from '../App/App';
 
 interface ITeamList {
     teams: ITeam[];
 }
 
 export interface ITeamListDispatchProps {
-    deleteTeam: (team: ITeam) => any;
+    deleteTeam: (team: ITeam, uid: string) => any;
 }
 
 export type ITeamListProps = ITeamList & ITeamListDispatchProps;
@@ -24,12 +25,13 @@ export type ITeamListProps = ITeamList & ITeamListDispatchProps;
 const TeamList: React.FC<ITeamListProps> = ({ teams, deleteTeam }) => {
     const [[team, setTeam], [addOrEditTeam, setAddOrEditTeam]] = useDocumentCU<ITeam>();
 
+    const user = useContext(UserContext);
     const { _onEditClick, _onDeleteClick } = createUpdateClickHandlers<ITeam>(
         [
             [team, setTeam],
             [addOrEditTeam, setAddOrEditTeam]
         ],
-        deleteTeam
+        (team: ITeam) => deleteTeam(team, user.uid)
     );
 
     const config: IDetailsListDocumentsProps<ITeam[]> = {
@@ -156,7 +158,7 @@ const mapStateToProps = (state: IStateTree): ITeamList => {
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        deleteTeam: (team: ITeam) => dispatch(deleteTeam(team))
+        deleteTeam: (team: ITeam, uid: string) => dispatch(deleteTeam(team, uid))
     };
 };
 

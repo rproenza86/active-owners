@@ -8,7 +8,12 @@ import Login from '../Login/Login';
 import { connect } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 import ProtectedRoute from '../ProtectedRoute';
-import { getACList, ITeamsMemberHydrated } from '../../actions/activeOwners';
+import {
+    getACList,
+    ITeamsMemberHydrated,
+    subscribeToTeamNotifications,
+    unSubscribeToTeamNotifications
+} from '../../actions/activeOwners';
 import { IStateTree } from '../../types';
 import { Cell, Row } from '@material/react-layout-grid';
 import TeamList from '../TeamList/TeamList';
@@ -19,16 +24,35 @@ import './App.css';
 interface IApp {
     isAuthenticated: boolean;
     isVerifying: boolean;
-    loadAC: (isAuthenticated: boolean) => void;
+    loadAC: (isAuthenticated: boolean, uid: string) => void;
     activeOwners: ITeamsMemberHydrated[];
+    handleTeamNotificationSubscription: (
+        activeOwner: ITeamsMemberHydrated,
+        pushNotificationSubscription: string,
+        user: firebase.User
+    ) => void;
+    handleTeamNotificationUnSubscription: (teamId: string, uid: string) => void;
+    user: firebase.User;
 }
 
-const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwners }) => {
+export let UserContext: React.Context<firebase.User>;
+
+const App: React.FC<IApp> = ({
+    isAuthenticated,
+    isVerifying,
+    loadAC,
+    activeOwners,
+    user,
+    handleTeamNotificationSubscription,
+    handleTeamNotificationUnSubscription
+}) => {
     const [isLoading, setIsLoading] = useState(true);
 
+    UserContext = React.createContext(user);
+
     useEffect(() => {
-        loadAC(isAuthenticated);
-    }, [isAuthenticated, loadAC]);
+        loadAC(isAuthenticated, user.uid);
+    }, [isAuthenticated, loadAC, user]);
 
     setTimeout(function() {
         setIsLoading(false);
@@ -45,7 +69,22 @@ const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwner
             <Row>
                 {activeOwners.map((ac, index) => (
                     <Cell desktopColumns={3} phoneColumns={4} tabletColumns={4} key={index}>
-                        <ActiveOwner activeOwner={ac} />
+                        <ActiveOwner
+                            activeOwner={ac}
+                            onTeamNotificationSubscription={(
+                                activeOwner: ITeamsMemberHydrated,
+                                pushNotificationSubscription: string
+                            ) =>
+                                handleTeamNotificationSubscription(
+                                    activeOwner,
+                                    pushNotificationSubscription,
+                                    user
+                                )
+                            }
+                            onTeamNotificationUnSubscription={() =>
+                                handleTeamNotificationUnSubscription(ac.teamId, user.uid)
+                            }
+                        />
                     </Cell>
                 ))}
             </Row>
@@ -53,38 +92,40 @@ const App: React.FC<IApp> = ({ isAuthenticated, isVerifying, loadAC, activeOwner
     );
 
     return (
-        <div className="App">
-            {isLoading ? (
-                <Splash />
-            ) : (
-                <Switch>
-                    <Main>
-                        <ProtectedRoute
-                            exact
-                            path="/"
-                            component={Home}
-                            isAuthenticated={isAuthenticated}
-                            isVerifying={isVerifying}
-                        />
-                        <Route path="/login" component={Login} />
-                        <ProtectedRoute
-                            exact
-                            path="/teams"
-                            component={TeamList}
-                            isAuthenticated={isAuthenticated}
-                            isVerifying={isVerifying}
-                        />
-                        <ProtectedRoute
-                            exact
-                            path="/engineers"
-                            component={TeamMemberList}
-                            isAuthenticated={isAuthenticated}
-                            isVerifying={isVerifying}
-                        />
-                    </Main>
-                </Switch>
-            )}
-        </div>
+        <UserContext.Provider value={user}>
+            <div className="App">
+                {isLoading ? (
+                    <Splash />
+                ) : (
+                    <Switch>
+                        <Main>
+                            <ProtectedRoute
+                                exact
+                                path="/"
+                                component={Home}
+                                isAuthenticated={isAuthenticated}
+                                isVerifying={isVerifying}
+                            />
+                            <Route path="/login" component={Login} />
+                            <ProtectedRoute
+                                exact
+                                path="/teams"
+                                component={TeamList}
+                                isAuthenticated={isAuthenticated}
+                                isVerifying={isVerifying}
+                            />
+                            <ProtectedRoute
+                                exact
+                                path="/engineers"
+                                component={TeamMemberList}
+                                isAuthenticated={isAuthenticated}
+                                isVerifying={isVerifying}
+                            />
+                        </Main>
+                    </Switch>
+                )}
+            </div>
+        </UserContext.Provider>
     );
 };
 
@@ -96,15 +137,25 @@ const mapStateToProps = (state: IStateTree) => {
     return {
         isAuthenticated: state.auth.isAuthenticated,
         isVerifying: state.auth.isVerifying,
-        activeOwners
+        activeOwners,
+        user: state.auth.user
     };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        loadAC: (isAuthenticated: boolean) => {
-            isAuthenticated && dispatch(getACList());
-        }
+        loadAC: (isAuthenticated: boolean, uid: string) => {
+            isAuthenticated && dispatch(getACList(uid));
+        },
+        handleTeamNotificationSubscription: (
+            activeOwner: ITeamsMemberHydrated,
+            pushNotificationSubscription: string,
+            user: firebase.User
+        ) =>
+            user?.uid &&
+            dispatch(subscribeToTeamNotifications(activeOwner, pushNotificationSubscription, user)),
+        handleTeamNotificationUnSubscription: (teamId: string, uid: string) =>
+            uid && dispatch(unSubscribeToTeamNotifications(teamId, uid))
     };
 };
 

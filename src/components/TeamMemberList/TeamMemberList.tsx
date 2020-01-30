@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { connect } from 'react-redux';
 import { IStateTree, ITeamMember } from '../../types';
@@ -12,13 +12,14 @@ import TeamMember from '../TeamMember/TeamMember';
 import { deleteTeamMember } from '../../actions/teamMembers';
 import { useDocumentCU } from '../common/hooks';
 import { createUpdateClickHandlers } from '../common/createUpdateClickHandlers';
+import { UserContext } from '../App/App';
 
 interface ITeamMemberList {
     teamsMembers: ITeamsMemberHydrated[];
 }
 
 export interface ITeamMemberListDispatchProps {
-    deleteMember: (teamMember: ITeamMember) => any;
+    deleteMember: (teamMember: ITeamMember, uid: string) => any;
 }
 
 export type ITeamMemberListProps = ITeamMemberList & ITeamMemberListDispatchProps;
@@ -29,12 +30,13 @@ const TeamMemberList: React.FC<ITeamMemberListProps> = ({ teamsMembers, deleteMe
         [addOrEditTeamMember, setAddOrEditTeamMember]
     ] = useDocumentCU<ITeamsMemberHydrated>();
 
+    const user = useContext(UserContext);
     const { _onEditClick, _onDeleteClick } = createUpdateClickHandlers<ITeamsMemberHydrated>(
         [
             [teamMember, setTeamMember],
             [addOrEditTeamMember, setAddOrEditTeamMember]
         ],
-        deleteMember
+        (teamMember: ITeamMember) => deleteMember(teamMember, user.uid)
     );
 
     const config: IDetailsListDocumentsProps<ITeamsMemberHydrated[]> = {
@@ -190,7 +192,8 @@ const mapStateToProps = (state: IStateTree): ITeamMemberList => {
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        deleteMember: (teamMember: ITeamMember) => dispatch(deleteTeamMember(teamMember))
+        deleteMember: (teamMember: ITeamMember, uid: string) =>
+            dispatch(deleteTeamMember(teamMember, uid))
     };
 };
 

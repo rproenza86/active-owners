@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Card, {
     CardPrimaryContent,
     CardMedia,
@@ -29,18 +29,61 @@ import Team from '../Team/Team';
 import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
 import './ActiveOwner.scss';
+import { notifyEvent } from '../../utils/notification';
+import { UserContext } from '../App/App';
 
 interface IActiveOwnerProps {
     activeOwner: ITeamsMemberHydrated;
+    onTeamNotificationSubscription: (
+        activeOwner: ITeamsMemberHydrated,
+        pushNotificationSubscription: string
+    ) => void;
+    onTeamNotificationUnSubscription: () => void;
 }
 
-const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
+const ActiveOwner: React.FC<IActiveOwnerProps> = ({
+    activeOwner,
+    onTeamNotificationSubscription,
+    onTeamNotificationUnSubscription
+}) => {
     // menu setup
     const [openMenu, setOpenMenu] = useState(false);
     const [openUpdateTeamAC, setOpenUpdateTeamAC] = useState(false);
     const [coordinates, setCoordinates] = useState(undefined);
     const [addTeamMember, setAddTeamMember] = useState(false);
     const [addTeam, setAddTeam] = useState(false);
+    const [favIconType, setFavIconType] = useState(
+        activeOwner.isNotificationSubscriber ? 'favorite' : 'favorite_border'
+    );
+
+    const subscribeToUpdatesNotifications = () => {
+        if (favIconType === 'favorite') {
+            onTeamNotificationUnSubscription();
+            return setFavIconType('favorite_border');
+        }
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+                // console.clear()
+                // console.log('I got the registration', registration);
+                registration.pushManager.getSubscription().then(function(subscription) {
+                    if (subscription !== null) {
+                        setFavIconType('favorite');
+                        onTeamNotificationSubscription(activeOwner, JSON.stringify(subscription));
+                    } else {
+                        console.log('User is NOT subscribed.');
+                    }
+                });
+            });
+        } else {
+            notifyEvent({
+                type: 'info',
+                message: 'Notification Subscription',
+                description:
+                    'Your web browser not support push notifications. We are not able to subscribe you.'
+            });
+            setFavIconType('favorite_border');
+        }
+    };
 
     const rightClickCallback = (event: any) => {
         setOpenMenu(!openMenu);
@@ -74,11 +117,14 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
         'https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/2.jpg';
     const fallbackLogo = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
 
+    const user = useContext(UserContext);
+
     return (
         <>
             <UpdateTeamAC
                 isOpen={openUpdateTeamAC}
                 currentAO={activeOwner}
+                uid={user.uid}
                 onCloseUpdateHandler={(keepOpen?: boolean) =>
                     setOpenUpdateTeamAC(keepOpen || !openUpdateTeamAC)
                 }
@@ -117,7 +163,9 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
                         </Subtitle2>
                     </div>
                     <Body2 tag="div" className="active-owner-card__secondary">
-                        <Subtitle2 className="active-owner-card__subtitle contact-label">Contact Info:</Subtitle2>
+                        <Subtitle2 className="active-owner-card__subtitle contact-label">
+                            Contact Info:
+                        </Subtitle2>
 
                         <ListGroup>
                             <ListDivider tag="div" />
@@ -153,8 +201,8 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
                         </Button>
                     </CardActionButtons>
                     <CardActionIcons>
-                        <IconButton>
-                            <MaterialIcon icon="favorite_border" />
+                        <IconButton onClick={() => subscribeToUpdatesNotifications()}>
+                            <MaterialIcon icon={favIconType} />
                         </IconButton>
                         <IconButton onClick={event => rightClickCallback(event)}>
                             <MaterialIcon icon="more_vert" />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { connect } from 'react-redux';
 import Dialog, {
     DialogTitle,
@@ -13,6 +13,7 @@ import { IStateTree } from '../../types';
 import { ITeamsMemberHydrated, updateTeamAO } from '../../actions/activeOwners';
 
 import './UpdateTeamAC.scss';
+import { UserContext } from '../App/App';
 
 interface IUpdateTeamACProps {
     isOpen: boolean;
@@ -20,7 +21,8 @@ interface IUpdateTeamACProps {
     selectedIndex?: number;
     onCloseUpdateHandler: () => void;
     choices?: ITeamsMemberHydrated[];
-    updateTeam?: (teamId: string, aoId: string) => void;
+    updateTeam?: (teamId: string, aoId: string, uid: string) => void;
+    uid: string;
 }
 
 const UpdateTeamAC: React.FC<IUpdateTeamACProps> = ({
@@ -28,15 +30,17 @@ const UpdateTeamAC: React.FC<IUpdateTeamACProps> = ({
     onCloseUpdateHandler: onSelectionUpdateHandler,
     currentAO,
     choices,
-    updateTeam
+    updateTeam,
+    uid
 }) => {
     const [selectedIndexState, setSelectedIndexState] = useState(currentAO.id || '');
 
+    const user = useContext(UserContext);
     const onCloseHandler = (action: string) => {
         onSelectionUpdateHandler();
 
         if (action === 'confirm' && currentAO.id !== selectedIndexState) {
-            updateTeam && updateTeam(currentAO.teamId, selectedIndexState);
+            updateTeam && updateTeam(currentAO.teamId, selectedIndexState, user.uid);
         } else {
             setSelectedIndexState(currentAO.id);
         }
@@ -94,12 +98,12 @@ const mapStateToProps = (state: IStateTree, props: IUpdateTeamACProps): IUpdateT
     const { currentAO } = props;
     const choices = state.teamsMembers.filter(member => member.teamId === currentAO.teamId);
 
-    return { ...props, choices };
+    return { ...props, choices, uid: state.auth?.user?.uid };
 };
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        updateTeam: (teamId: string, aoId: string) => dispatch(updateTeamAO(teamId, aoId))
+        updateTeam: (teamId: string, aoId: string, uid: string) => dispatch(updateTeamAO(teamId, aoId, uid))
     };
 };
 

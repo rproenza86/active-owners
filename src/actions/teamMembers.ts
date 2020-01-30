@@ -3,7 +3,9 @@ import { notifyEvent } from '../utils/notification';
 import { getACList } from './activeOwners';
 import { createDocument, updateDocument, deleteDocument } from '../services/commonDbOps';
 
-export const addTeamMember = (teamMember: ITeamMemberCore) => async (dispatch: any) => {
+export const addTeamMember = (teamMember: ITeamMemberCore, uid: string) => async (
+    dispatch: any
+) => {
     try {
         const result = await createDocument('team-members', teamMember);
         if (result.ok) {
@@ -13,7 +15,7 @@ export const addTeamMember = (teamMember: ITeamMemberCore) => async (dispatch: a
                 description: `${teamMember.name} was successfully added as member of the team`
             });
 
-            dispatch(getACList());
+            dispatch(getACList(uid));
         }
     } catch (error) {
         notifyEvent({
@@ -30,7 +32,8 @@ export const addTeamMember = (teamMember: ITeamMemberCore) => async (dispatch: a
 
 export const updateTeamMember = (
     teamMemberId: string,
-    updatedTeamMember: ITeamMemberCore
+    updatedTeamMember: ITeamMemberCore,
+    uid: string
 ) => async (dispatch: any) => {
     try {
         const result = await updateDocument('team-members', teamMemberId, updatedTeamMember);
@@ -41,7 +44,7 @@ export const updateTeamMember = (
                 description: `The Team Member ${updatedTeamMember.name} was successfully updated`
             });
 
-            dispatch(getACList());
+            dispatch(getACList(uid));
         }
     } catch (error) {
         notifyEvent({
@@ -54,7 +57,7 @@ export const updateTeamMember = (
     }
 };
 
-export const deleteTeamMember = (teamMember: ITeamMember) => {
+export const deleteTeamMember = (teamMember: ITeamMember, uid: string) => {
     return async (dispatch: any) => {
         try {
             const result = await deleteDocument('team-members', teamMember.id);
@@ -64,7 +67,7 @@ export const deleteTeamMember = (teamMember: ITeamMember) => {
                     message: 'Team Member Deletion',
                     description: `The Team Member ${teamMember.name} was successfully deleted`
                 });
-                dispatch(getACList());
+                dispatch(getACList(uid));
             }
         } catch (error) {
             notifyEvent({

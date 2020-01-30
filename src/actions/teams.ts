@@ -18,7 +18,7 @@ export const getTeamsListSuccess: ActionCreator<GetTeamsListSuccessAction> = (
     };
 };
 
-export const addTeam = (team: ITeamsObject) => async (dispatch: any) => {
+export const addTeam = (team: ITeamsObject, uid: string) => async (dispatch: any) => {
     try {
         const result = await createDocument('teams', team);
         if (result.ok) {
@@ -28,7 +28,7 @@ export const addTeam = (team: ITeamsObject) => async (dispatch: any) => {
                 description: `${team.name} was successfully added as a new team`
             });
 
-            dispatch(getACList());
+            dispatch(getACList(uid));
         }
     } catch (error) {
         notifyEvent({
@@ -43,7 +43,7 @@ export const addTeam = (team: ITeamsObject) => async (dispatch: any) => {
     }
 };
 
-export const updateTeam = (updatedTeam: ITeam) => async (dispatch: any) => {
+export const updateTeam = (updatedTeam: ITeam, uid: string) => async (dispatch: any) => {
     try {
         const updatedTeamId = updatedTeam.id;
         delete updatedTeam.id;
@@ -55,7 +55,7 @@ export const updateTeam = (updatedTeam: ITeam) => async (dispatch: any) => {
                 description: `The Team ${updatedTeam.name} was successfully updated.`
             });
 
-            dispatch(getACList());
+            dispatch(getACList(uid));
         }
     } catch (error) {
         notifyEvent({
@@ -68,7 +68,7 @@ export const updateTeam = (updatedTeam: ITeam) => async (dispatch: any) => {
     }
 };
 
-export const deleteTeam = (team: ITeam) => {
+export const deleteTeam = (team: ITeam, uid: string) => {
     return async (dispatch: any) => {
         try {
             const result = await deleteDocument('teams', team.id);
@@ -78,7 +78,7 @@ export const deleteTeam = (team: ITeam) => {
                     message: 'Team Deletion',
                     description: `The Team ${team.name} was successfully deleted`
                 });
-                dispatch(getACList());
+                dispatch(getACList(uid));
             }
         } catch (error) {
             notifyEvent({
