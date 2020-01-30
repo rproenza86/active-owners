@@ -88,3 +88,18 @@ export interface IDBOpsSimpleResult {
     ok: boolean;
     msg: string;
 }
+
+export interface IUserSubscription {
+    teamId: string;
+    uid: string;
+    name: string;
+    email: string;
+    cloudMessagingToken: string;
+    pushNotificationSubscription: string;
+}
+
+export type TSubscribeToTeamNotifications = (
+    activeOwner: ITeamsMemberHydrated,
+    pushNotificationSubscription: string,
+    uid: string
+) => (dispatch: any) => Promise<void>;

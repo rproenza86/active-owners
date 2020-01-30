@@ -5,7 +5,9 @@
     "scripts": {
         "start": "SASS_PATH=./node_modules PORT=3300 react-scripts start",
         "start-ssl": "SASS_PATH=./node_modules PORT=3300 HTTPS=true react-scripts start",
-        "build": "SASS_PATH=./node_modules react-scripts build",
+        "build-sw": "node ./src/sw-build.js",
+        "clean-cra-sw": "rm -f build/precache-manifest.*.js && rm -f build/service-worker.js",
+        "build": "SASS_PATH=./node_modules react-scripts build && npm run build-sw && npm run clean-cra-sw",
         "test": "react-scripts test",
         "test:ci": "CI=true npm test -- --coverage",
         "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",

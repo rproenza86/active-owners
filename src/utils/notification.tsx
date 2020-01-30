@@ -3,7 +3,7 @@ import { notification } from 'antd';
 import 'antd/dist/antd.css';
 
 interface INotificationProps {
-    type: string;
+    type: 'success' | 'error' | 'info' | 'warn' | 'warning';
     message: string;
     description: string;
 }

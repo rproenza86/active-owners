@@ -5,6 +5,7 @@ import 'firebase/firestore';
 import 'firebase/performance';
 import 'firebase/remote-config';
 import 'firebase/storage';
+import 'firebase/messaging';
 
 const firebaseConfig = {
     apiKey: 'AIzaSyAcP-xv4rvh6ia6R2JoPTUA2UT6zWWE7-s',
