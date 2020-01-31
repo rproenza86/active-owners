@@ -92,7 +92,6 @@ const App: React.FC<IApp> = ({
     );
 
     return (
-        <UserContext.Provider value={user}>
             <div className="App">
                 {isLoading ? (
                     <Splash />
@@ -125,7 +124,6 @@ const App: React.FC<IApp> = ({
                     </Switch>
                 )}
             </div>
-        </UserContext.Provider>
     );
 };
 
