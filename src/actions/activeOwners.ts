@@ -13,6 +13,16 @@ import { sortList } from '../utils/sort';
 import { notifyEvent } from '../utils/notification';
 import { messaging } from '../services/cloudMessaging';
 import { unsubscribeToAONotification } from '../services/commonDbOps';
+import {
+    saveMessagingSubscriptionSuccess,
+    saveMessagingSubscriptionFailure,
+    initCloudMessaging,
+    initCloudMessagingDefault,
+    unsubscribeUserOfAOUpdatesRequest,
+    unsubscribeUserOfAOUpdatesFailure,
+    unsubscribeUserOfAOUpdatesSuccess
+} from './cloudMessaging';
+import { isNotificationGranted } from '../utils/browserNotification';
 
 export const GET_AC_LIST = 'GET_AC_LIST';
 export const GET_AC_LIST_SUCCESS = 'GET_AC_LIST_SUCCESS';
@@ -53,7 +63,6 @@ export const getTeamsMemberHydrated = (
         }
         const { location: teamLocation, logo = '', name: teamName, acId, id } = team;
 
-        // debugger;
         const isNotificationSubscriber =
             subscriptions.findIndex(subscription => subscription.teamId === id) >= 0;
 
@@ -91,6 +100,15 @@ export const getACList = (uid: string) => async (dispatch: Dispatch) => {
         const teams = await getTeams();
         const teamsMembers = await getTeamsMembers();
         const subscriptions = await getUserSubscriptions(uid, teams);
+
+        if (subscriptions.length) {
+            const { cloudMessagingToken, pushNotificationSubscription } = subscriptions[0];
+            dispatch(
+                initCloudMessaging(cloudMessagingToken, pushNotificationSubscription, subscriptions)
+            );
+        } else {
+            isNotificationGranted && dispatch(initCloudMessagingDefault());
+        }
 
         const teamsMemberHydrated: ITeamsMemberHydrated[] = getTeamsMemberHydrated(
             teamsMembers,
@@ -160,6 +178,8 @@ export const subscribeToTeamNotifications = (
                 description:
                     'You have been successfully subscribed. You will be notified each time the Active Owner change.'
             });
+
+            dispatch(saveMessagingSubscriptionSuccess());
         }
     } catch (error) {
         notifyEvent({
@@ -168,14 +188,28 @@ export const subscribeToTeamNotifications = (
             description: 'An error happened while attempting to subscribe you. Subscription failed.'
         });
 
-        console.error(error);
+        console.error('subscribeToTeamNotifications error:', error);
+
+        dispatch(
+            saveMessagingSubscriptionFailure(new Error(`Team ${activeOwner.teamName} Notification`))
+        );
     }
 };
 
 export const unSubscribeToTeamNotifications = (teamId: string, uid: string) => async (
     dispatch: any
 ) => {
+    const dispatchError = () =>
+        dispatch(
+            unsubscribeUserOfAOUpdatesFailure(
+                new Error(
+                    `An error happened while attempting to unsubscribe you from  team ${teamId}. Un-subscription failed.`
+                )
+            )
+        );
     try {
+        dispatch(unsubscribeUserOfAOUpdatesRequest(teamId));
+
         const result = await unsubscribeToAONotification(uid, teamId);
         if (result.ok) {
             notifyEvent({
@@ -184,6 +218,9 @@ export const unSubscribeToTeamNotifications = (teamId: string, uid: string) => a
                 description:
                     'You have been successfully unsubscribed. You will not be notified about Team Active Owner changes.'
             });
+            dispatch(unsubscribeUserOfAOUpdatesSuccess(teamId));
+        } else {
+            dispatchError();
         }
     } catch (error) {
         notifyEvent({
@@ -194,5 +231,6 @@ export const unSubscribeToTeamNotifications = (teamId: string, uid: string) => a
         });
 
         console.error(error);
+        dispatchError();
     }
 };
