@@ -1,5 +1,6 @@
-const applicationServerPublicKey =
-    'BC1gODQJMEINHBVHV1uFTOaB-_dIUs6ZSYbde8AJ03Wnj8_KegQ9URIOqq0rV23YOT1L6BLnMNsf85LcwOEyFJI';
+import { CLOUD_MESSAGING_WEB_PUSH_PUBLIC_KEY } from '../constants';
+
+const applicationServerPublicKey = CLOUD_MESSAGING_WEB_PUSH_PUBLIC_KEY;
 
 function urlB64ToUint8Array(base64String: any) {
     const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -14,26 +15,24 @@ function urlB64ToUint8Array(base64String: any) {
     return outputArray;
 }
 
-function updateSubscriptionOnServer(subscription: PushSubscription) {
-    // TODO: Update subscription
-    // console.log(JSON.stringify(subscription));
-}
+export async function subscribeUser(): Promise<string> {
+    let subscriptionString = '';
 
-export function subscribeUser() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then(registration => {
-            const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
-            registration.pushManager
-                .subscribe({
+        try {
+            const registration = await navigator.serviceWorker.ready;
+            if (registration) {
+                const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+                const subscription = await registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: applicationServerKey
-                })
-                .then(function(subscription) {
-                    updateSubscriptionOnServer(subscription);
-                })
-                .catch(function(error) {
-                    console.error('Failed to subscribe the user: ', error);
                 });
-        });
+                subscriptionString = JSON.stringify(subscription);
+            }
+        } catch (error) {
+            console.error('Failed to subscribe the user: ', error);
+        }
     }
+
+    return subscriptionString;
 }
