@@ -26,64 +26,41 @@ import UpdateTeamAC from '../UpdateTeamAC/UpdateTeamAC';
 import TeamMember from '../TeamMember/TeamMember';
 import Team from '../Team/Team';
 
+import { UserContext } from '../App/App';
+
 import { ITeamsMemberHydrated } from '../../actions/activeOwners';
 
 import './ActiveOwner.scss';
-import { notifyEvent } from '../../utils/notification';
-import { UserContext } from '../App/App';
+import AONotificationUpdate from './AONotificationUpdate';
 
 interface IActiveOwnerProps {
     activeOwner: ITeamsMemberHydrated;
-    onTeamNotificationSubscription: (
-        activeOwner: ITeamsMemberHydrated,
-        pushNotificationSubscription: string
-    ) => void;
-    onTeamNotificationUnSubscription: () => void;
 }
 
-const ActiveOwner: React.FC<IActiveOwnerProps> = ({
-    activeOwner,
-    onTeamNotificationSubscription,
-    onTeamNotificationUnSubscription
-}) => {
+const ActiveOwner: React.FC<IActiveOwnerProps> = ({ activeOwner }) => {
     // menu setup
     const [openMenu, setOpenMenu] = useState(false);
     const [openUpdateTeamAC, setOpenUpdateTeamAC] = useState(false);
     const [coordinates, setCoordinates] = useState(undefined);
     const [addTeamMember, setAddTeamMember] = useState(false);
     const [addTeam, setAddTeam] = useState(false);
-    const [favIconType, setFavIconType] = useState(
-        activeOwner.isNotificationSubscriber ? 'favorite' : 'favorite_border'
-    );
 
-    const subscribeToUpdatesNotifications = () => {
-        if (favIconType === 'favorite') {
-            onTeamNotificationUnSubscription();
-            return setFavIconType('favorite_border');
+    const user = useContext(UserContext);
+
+    const fallBackImage =
+        'https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/2.jpg';
+    const fallbackLogo = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
+
+    const menuOptions = [
+        {
+            optionName: 'Add Team',
+            optionCallBack: () => setAddTeam(!addTeam)
+        },
+        {
+            optionName: 'Add Member',
+            optionCallBack: () => setAddTeamMember(!addTeamMember)
         }
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.ready.then(registration => {
-                // console.clear()
-                // console.log('I got the registration', registration);
-                registration.pushManager.getSubscription().then(function(subscription) {
-                    if (subscription !== null) {
-                        setFavIconType('favorite');
-                        onTeamNotificationSubscription(activeOwner, JSON.stringify(subscription));
-                    } else {
-                        console.log('User is NOT subscribed.');
-                    }
-                });
-            });
-        } else {
-            notifyEvent({
-                type: 'info',
-                message: 'Notification Subscription',
-                description:
-                    'Your web browser not support push notifications. We are not able to subscribe you.'
-            });
-            setFavIconType('favorite_border');
-        }
-    };
+    ];
 
     const rightClickCallback = (event: any) => {
         setOpenMenu(!openMenu);
@@ -95,29 +72,6 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({
         // This won't be needed in other cases besides right click.
         event.preventDefault();
     };
-
-    const dummyOptionCallBack = (optionName: string) =>
-        console.log(`Menu option "${optionName}" clicked`);
-    const menuOptions = [
-        {
-            optionName: 'Add Team',
-            optionCallBack: () => setAddTeam(!addTeam)
-        },
-        {
-            optionName: 'Add Member',
-            optionCallBack: () => setAddTeamMember(!addTeamMember)
-        },
-        {
-            optionName: 'Change Rotation',
-            optionCallBack: dummyOptionCallBack
-        }
-    ];
-
-    const fallBackImage =
-        'https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/2.jpg';
-    const fallbackLogo = 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png';
-
-    const user = useContext(UserContext);
 
     return (
         <>
@@ -201,9 +155,7 @@ const ActiveOwner: React.FC<IActiveOwnerProps> = ({
                         </Button>
                     </CardActionButtons>
                     <CardActionIcons>
-                        <IconButton onClick={() => subscribeToUpdatesNotifications()}>
-                            <MaterialIcon icon={favIconType} />
-                        </IconButton>
+                        <AONotificationUpdate activeOwner={activeOwner} user={user} />
                         <IconButton onClick={event => rightClickCallback(event)}>
                             <MaterialIcon icon="more_vert" />
 
