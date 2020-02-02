@@ -58,10 +58,22 @@ export interface ITeam extends ITeamsObject {
     id: string;
 }
 
+export interface ICloudNotificationState {
+    cloudMessagingToken: string;
+    pushNotificationSubscription: string;
+    isNotificationGranted: boolean;
+    isNotificationBlocked: boolean;
+    aoUpdateSubscriptions: Array<string>
+    processing?: {
+        teamId: string;
+    };
+}
+
 export interface IStateTree {
     auth: IAuthState;
     teamsMembers: ITeamsMembersState;
     teams: ITeam[];
+    cloudMessaging: ICloudNotificationState;
 }
 
 export interface SimpleFSA<T> extends Action {
