@@ -1,6 +1,3 @@
-import { subscribeUser } from './services/pushNotifications';
-import { initMessaging } from './services/cloudMessaging';
-
 // This optional code is used to register a service worker.
 // register() is not called by default.
 
@@ -64,10 +61,6 @@ function registerValidSW(swUrl: string, config?: Config) {
     navigator.serviceWorker
         .register(swUrl)
         .then(registration => {
-            initMessaging(registration);
-            subscribeUser();
-            // registration.addEventListener('push', event => handlePushEvent(event, registration));
-
             registration.onupdatefound = () => {
                 const installingWorker = registration.installing;
                 if (installingWorker == null) {
