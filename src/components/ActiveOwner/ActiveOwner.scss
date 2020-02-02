@@ -4,6 +4,7 @@
 @import '@material/react-typography/index.scss';
 @import '@material/react-list/index.scss';
 @import '@material/react-menu-surface/index.scss';
+@import '@material/elevation/mdc-elevation';
 
 .active-owner-card__primary,
 .active-owner-card__secondary {
@@ -26,4 +27,13 @@
         top: -23px;
         left: 43%;
     }
+}
+
+.ant-popover-arrow,
+.ant-popover-inner {
+    @include mdc-elevation(12);
+}
+
+.ant-spin-spinning {
+    padding: 12px;
 }
